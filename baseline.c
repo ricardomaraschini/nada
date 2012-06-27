@@ -27,8 +27,10 @@ int main(int argc, char *argv[]) {
 	FILE *command = NULL;
 	char *command_line = NULL;
 	char *line = NULL;
+	char *line_bkp = NULL;
 	struct metric_t *mt;
 	struct metric_t *metrics_root;
+	struct deviation_t *deviation;
 
 	if (argc <= 1) {
 		printf("Invalid baseline command supplied\n");
@@ -72,23 +74,43 @@ int main(int argc, char *argv[]) {
 		return OK;
 	}
 
-	free(command_line);
 	pclose(command);
 
-	strtok(line,"|");
+	line_bkp = line;
+
+	strtok(line_bkp,"|");
 	metrics_root = parse_perfdata(strtok(NULL,"|"));
 	if (metrics_root == NULL) {
 		printf("Error parsing metric data\n");
+		free(command_line);
 		return UNKNOWN;
 	}
 
-	for(mt=metrics_root; mt != NULL ;mt = mt->next) {
-		printf("+\n");
+	for(mt=metrics_root; mt != NULL; mt=mt->next) {
+		deviation = get_deviation(command_line,mt);
+		free(deviation);
+
+		//printf("name: %s\n",mt->name);
+		//printf("value: %.3f %s\n",mt->value,mt->unit);
 	}
 
+	free(command_line);
 	free(line);
 
 	return OK;
+}
+
+struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
+
+	struct deviation_t *dv;
+
+	dv = malloc(sizeof(struct deviation_t));
+	printf("command_line: %s\n",command_line);
+	printf("name: %s\n",mt->name);
+	printf("value: %.3f %s\n",mt->value,mt->unit);
+
+	return dv;
+
 }
 
 struct metric_t *parse_perfdata(char *perfdata) {
@@ -113,7 +135,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 	}
 
 	// a regex to extract our metric values 
-	ret = regcomp(&metric_regex, "([^=]+)=([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)", REG_EXTENDED);
+	ret = regcomp(&metric_regex, "([^=]+)=([0-9.]+)([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)", REG_EXTENDED);
 	if (ret != 0) {
 		printf("Unable to compile internal regular expression\n");
 		return NULL;
@@ -158,7 +180,6 @@ struct metric_t *parse_perfdata(char *perfdata) {
 					k++;
 				}
 				*(aux_string + k) = '\x0'; 
-				
 
 				switch(i) {
 
@@ -168,6 +189,10 @@ struct metric_t *parse_perfdata(char *perfdata) {
 					
 				case METRICVALUE:
 					metric->value = atof(aux_string);
+					break;
+
+				case METRICUNIT:
+					metric->unit = strdup(aux_string);
 					break;
 
 				case METRICWARNING:

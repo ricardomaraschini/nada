@@ -13,15 +13,17 @@
 
 #define METRICNAME 1 
 #define METRICVALUE 2
-#define METRICWARNING 3
-#define METRICCRITICAL 4
-#define METRICMIN 5
-#define METRICMAX 6
+#define METRICUNIT 3
+#define METRICWARNING 4 
+#define METRICCRITICAL 5
+#define METRICMIN 6
+#define METRICMAX 7
 
 
 struct metric_t {
 	char *name;
 	float value;
+	char *unit;
 	float warning;
 	float critical;
 	float min;
@@ -29,5 +31,11 @@ struct metric_t {
 	struct metric_t *next;
 };
 
+struct deviation_t {
+	float top;
+	float bottom;
+};
+
 char *read_command_line(int argc, char *argv[]);
 struct metric_t *parse_perfdata(char *perfdata);
+struct deviation_t *get_deviation(char *command_line, struct metric_t *mt);
