@@ -31,9 +31,10 @@ int main(int argc, char *argv[]) {
 	struct metric_t *mt;
 	struct metric_t *metrics_root;
 	struct deviation_t *deviation;
+	int ret;
 
 	if (argc <= 1) {
-		printf("Invalid baseline command supplied\n");
+		printf("Invalid check command supplied\n");
 		return UNKNOWN;
 	}
 
@@ -86,6 +87,14 @@ int main(int argc, char *argv[]) {
 		return UNKNOWN;
 	}
 
+	ret = open_db_conn();
+	if (ret != OK) {
+		printf("Unable to connect to mysql database\n");
+		free(command_line);
+		free(line);
+		return UNKNOWN;
+	}
+
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
 		deviation = get_deviation(command_line,mt);
 		free(deviation);
@@ -96,6 +105,7 @@ int main(int argc, char *argv[]) {
 
 	free(command_line);
 	free(line);
+	close_db_conn();
 
 	return OK;
 }
@@ -103,11 +113,17 @@ int main(int argc, char *argv[]) {
 struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 
 	struct deviation_t *dv;
+	int ret;
+
+	ret = db_insert_metric(command_line, mt);
+	if (ret != OK) {
+		return NULL;
+	}
 
 	dv = malloc(sizeof(struct deviation_t));
-	printf("command_line: %s\n",command_line);
-	printf("name: %s\n",mt->name);
-	printf("value: %.3f %s\n",mt->value,mt->unit);
+	//printf("command_line: %s\n",command_line);
+	//printf("name: %s\n",mt->name);
+	//printf("value: %.3f %s\n",mt->value,mt->unit);
 
 	return dv;
 
@@ -158,7 +174,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 		// advance perfdata to the next metric
 		perfdata += pmatch[1].rm_eo;
 
-		printf("%s\n",metric_string);
+		//printf("%s\n",metric_string);
 
 		// apply the regex to one metric data
 		if (regexec(&metric_regex, metric_string, MAXMETRICS, pmatch, 0) == 0) {

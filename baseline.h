@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <regex.h>
+#include <mysql/mysql.h>
 
 #define OK 0
 #define UNKNOWN 3
@@ -39,3 +40,9 @@ struct deviation_t {
 char *read_command_line(int argc, char *argv[]);
 struct metric_t *parse_perfdata(char *perfdata);
 struct deviation_t *get_deviation(char *command_line, struct metric_t *mt);
+
+int db_insert_metric(char *command_line, struct metric_t *mt);
+int open_db_conn();
+void close_db_conn();
+char *escape_string(char *from);
+int do_query(char *q);
