@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <regex.h>
 #include <math.h>
+#include <time.h>
 #include <mysql/mysql.h>
 
 #define TRUE 1
@@ -16,7 +17,7 @@
 #define MAXMETRICS 10
 #define MAXMETRICNAME 256
 
-#define MAXDAYSTODEVIATION 5 
+#define MAXDAYSTODEVIATION 7 
 
 #define METRICNAME 1 
 #define METRICVALUE 2
@@ -24,7 +25,7 @@
 #define METRICWARNING 4 
 #define METRICCRITICAL 5
 #define METRICMIN 6
-#define METRICMAX 7
+#define METRICMAX 7 
 
 
 struct metric_t {
@@ -51,5 +52,6 @@ int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);
 int db_open_conn();
 void db_close_conn();
+char *db_create_time_gaps();
 char *escape_string(char *from);
 int do_query(char *q, int return_values, MYSQL_RES **result);

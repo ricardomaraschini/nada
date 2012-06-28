@@ -58,12 +58,16 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	int i = 0;
 	char *prot_cmd_line = NULL;
 	char *prot_metric_name = NULL;
-	char *query;
+	char *query = NULL;
+	//char *time_gaps = NULL;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row;
 
 	prot_cmd_line = escape_string(command_line);
 	prot_metric_name = escape_string(mt->name);
+
+	//time_gaps = db_create_time_gaps();
+	db_create_time_gaps();
 
 	asprintf( &query,
 	          "select value from history where command_line='%s' and metric='%s' order by entry_time desc limit %d",
@@ -80,6 +84,57 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	mysql_free_result(result);
 
 	return OK;
+
+}
+
+char *db_create_time_gaps() {
+
+	time_t now;
+	time_t previous_week;
+	time_t before; 
+	time_t after;
+	struct tm *time_begin;
+	struct tm *time_end;
+	//char *time_gaps = NULL;
+	char *str_time_begin = NULL;
+	char *str_time_end = NULL;
+	int time_tolerance = 300;
+	int i;
+
+	now = time(NULL);
+
+	str_time_begin = malloc(20);
+	str_time_end = malloc(20);
+
+	// date format: 2012-06-27 22:02:55
+	for(i=0; i<MAXDAYSTODEVIATION; i++) {
+
+		previous_week = now - (i * 60 * 60 * 24 * 7); // one week
+
+		before = previous_week - time_tolerance;
+		after = previous_week + time_tolerance;
+
+		time_begin = malloc(sizeof(struct tm));
+		time_end = malloc(sizeof(struct tm));
+
+		localtime_r(&before, time_begin);
+		localtime_r(&after, time_end);
+
+		strftime(str_time_begin, 20, "%Y-%m-%d %H:%M:%S", time_begin);
+		strftime(str_time_end, 20, "%Y-%m-%d %H:%M:%S", time_end);
+
+		free(time_begin);
+		free(time_end);
+
+		printf("%s -> %s\n",str_time_begin,str_time_end);
+
+
+	}
+
+	
+
+	//return time_gaps;
+	return NULL; 
 
 }
 

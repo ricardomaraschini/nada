@@ -140,6 +140,7 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 
 		i = 0;
 		while(*(last_values + i) != -1 && i < MAXDAYSTODEVIATION) {
+			//printf("%d -> %.3f\n",i, *(last_values + i));
 
 			aux = *(last_values + i);
 			tosqrt += ( aux - average) * ( aux - average);
