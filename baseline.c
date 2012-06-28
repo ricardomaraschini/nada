@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 		return UNKNOWN;
 	}
 
-	ret = open_db_conn();
+	ret = db_open_conn();
 	if (ret != OK) {
 		printf("Unable to connect to mysql database\n");
 		free(command_line);
@@ -97,15 +97,15 @@ int main(int argc, char *argv[]) {
 
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
 		deviation = get_deviation(command_line,mt);
+		printf("%.3f,", deviation->top );
+		printf("%.3f,", mt->value );
+		printf("%.3f\n", deviation->bottom );
 		free(deviation);
-
-		//printf("name: %s\n",mt->name);
-		//printf("value: %.3f %s\n",mt->value,mt->unit);
 	}
 
 	free(command_line);
 	free(line);
-	close_db_conn();
+	db_close_conn();
 
 	return OK;
 }
@@ -113,17 +113,53 @@ int main(int argc, char *argv[]) {
 struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 
 	struct deviation_t *dv;
-	int ret;
+	float deviation;
+	float average;
+	float aux;
+	float tosqrt;
+	float sum;
+	int i;
+	float *last_values = NULL;
 
-	ret = db_insert_metric(command_line, mt);
-	if (ret != OK) {
-		return NULL;
+
+	last_values = malloc(sizeof(float) * MAXDAYSTODEVIATION);
+	for(i=0; i<MAXDAYSTODEVIATION; i++) {
+		*(last_values + i) = -1;
+	}
+	
+	db_retrieve_last_values(command_line, mt, last_values);
+	i = 0;
+	sum = 0;
+	while(*(last_values + i) != -1 && i < MAXDAYSTODEVIATION) {
+		sum += *(last_values + i);
+		i++;
+	}
+
+	if (i > 0) {
+		average = sum / i;
+
+		i = 0;
+		while(*(last_values + i) != -1 && i < MAXDAYSTODEVIATION) {
+
+			aux = *(last_values + i);
+			tosqrt += ( aux - average) * ( aux - average);
+			i++;
+
+		}
+
+		// just to be sure
+		if (i > 0) {
+			deviation = sqrt((double)tosqrt/i);
+			//printf("average: %.3f   deviation: %.3f\n\n",average,deviation);
+		}
+
 	}
 
 	dv = malloc(sizeof(struct deviation_t));
-	//printf("command_line: %s\n",command_line);
-	//printf("name: %s\n",mt->name);
-	//printf("value: %.3f %s\n",mt->value,mt->unit);
+	dv->top = average + deviation;
+	dv->bottom = average - deviation;
+
+	db_insert_metric(command_line, mt);
 
 	return dv;
 

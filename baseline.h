@@ -3,7 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <regex.h>
+#include <math.h>
 #include <mysql/mysql.h>
+
+#define TRUE 1
+#define FALSE 0
 
 #define OK 0
 #define UNKNOWN 3
@@ -11,6 +15,8 @@
 #define MAXPLUGINOUTPUT 2048
 #define MAXMETRICS 10
 #define MAXMETRICNAME 256
+
+#define MAXDAYSTODEVIATION 5 
 
 #define METRICNAME 1 
 #define METRICVALUE 2
@@ -42,7 +48,8 @@ struct metric_t *parse_perfdata(char *perfdata);
 struct deviation_t *get_deviation(char *command_line, struct metric_t *mt);
 
 int db_insert_metric(char *command_line, struct metric_t *mt);
-int open_db_conn();
-void close_db_conn();
+int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);
+int db_open_conn();
+void db_close_conn();
 char *escape_string(char *from);
-int do_query(char *q);
+int do_query(char *q, int return_values, MYSQL_RES **result);
