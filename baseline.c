@@ -10,15 +10,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Description:
- * 
- * 
- *
  * Compile: 
- * $ 
+ * $  make all
  *
  * Execute:
- * $
+ * $  ./baseline /path/to/a/nagios/plugin/wich/perfdata
+ *
  */
 #include "baseline.h"
 
@@ -177,7 +174,7 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 
 		// just to be sure
 		if (i > 0) {
-			deviation = sqrt((double)tosqrt/i);
+			deviation = sqrt((double)tosqrt/i) * DEVIATIONTOLERANCE;
 		}
 
 	}

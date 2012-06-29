@@ -1,1 +1,82 @@
-This project wants to add adaptative thresholds to Nagios
+NADA
+Nagios(R) Adaptive Thresholds
+Version: 0.01
+
+*************** WARNING ***************
+THIS PROJECT IS COMPLETELY EXPERIMENTAL
+       FEEDBACKS ARE WELCOME.
+***************************************
+
+
+0 - What is NADA?
+    ^^^^^^^^^^^^^
+
+NADA is a brand new project who intents to insert baseline adaptive thresholds
+to Nagios(R) Monitoring Framework. By "adaptive" i mean a threshold which may
+change through the time, accordingly to a given resource usage.
+
+This project is intended to you, who already done yourself a question like: 
+"How can I avoid false positives when monitoring a given server that every 
+Monday has a higher load average than during the other days?"
+
+
+1 - How does it work?
+    ^^^^^^^^^^^^^^^^^
+
+NADA needs a MySQL database running together with Nagios(R). It encapsulates
+your check plugin, parse and store performance data into DB, calculate the 
+standard deviation and create two new metrics, pointing to the top and bottom 
+of your baseline. If collected value overflow(up or down) the baseline, NADA
+change the plugin return code to CRITICAL thus causing Nagios(R) to alert.
+
+The standard behaviour assumes that you are using a week sazonality, if it's
+not appropriate to you, please may the source be with you.
+
+
+2. - OK, how can I configure this "thing" ?
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let's suppose you have a Nagios(R) command configuration like this:
+
+define command{
+	command_name    check_disk
+	command_line    $USER1$/check_disk -w $ARG1$ -c $ARG2$ -p $ARG3$
+}
+
+You just need to change command to the following and you are ready:
+
+define command{
+	command_name    check_disk_baseline
+	command_line    /path/to/baseline $USER1$/check_disk -w $ARG1$ -c $ARG2$ -p $ARG3$
+}
+
+
+3 - Configure is easy, how about compile?
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+At these early stages I have not prepared any how to about compilation, though
+it's pretty direct and simple.
+
+You just gonna need a C compiler(of course) and mysql-devel package installed 
+into your system. I leave a simple Makefile together with the project, so, if
+you want to adapt it to your system, go for it, don't forget to send me a diff.
+
+Basically, on these early stages, you are at you own. :-)
+
+
+4 - How about configuring MySQL ?
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You will find a .sql file together with the package. You basically need to run:
+
+$ mysql -u root -p -A < database-creation.sql 
+
+
+5 - Where can I configure database user/password?
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Short answer: change dblayer.c as you desire and recompile. If you want it to be
+easy, maybe you should chew watter :-). Remember, this software is not ready yet, 
+I still have a lot of things to improve.
+
+
