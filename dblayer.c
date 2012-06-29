@@ -59,21 +59,21 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	char *prot_cmd_line = NULL;
 	char *prot_metric_name = NULL;
 	char *query = NULL;
-	//char *time_gaps = NULL;
+	char *time_gaps = NULL;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row;
 
 	prot_cmd_line = escape_string(command_line);
 	prot_metric_name = escape_string(mt->name);
 
-	//time_gaps = db_create_time_gaps();
-	db_create_time_gaps();
+	time_gaps = db_create_time_gaps();
 
 	asprintf( &query,
-	          "select value from history where command_line='%s' and metric='%s' order by entry_time desc limit %d",
+	          "select value from history where command_line='%s' and metric='%s' or (%s) order by entry_time desc limit %d",
 	          prot_cmd_line,
 	          prot_metric_name,
-	          MAXDAYSTODEVIATION
+	          time_gaps,
+	          MAXENTRIESTODEVIATION
 	);
 
 	do_query(query, TRUE, &result);
@@ -82,6 +82,11 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 		i++;
 	}
 	mysql_free_result(result);
+
+	free(query);
+	free(prot_cmd_line);
+	free(prot_metric_name);
+	free(time_gaps);
 
 	return OK;
 
@@ -95,7 +100,8 @@ char *db_create_time_gaps() {
 	time_t after;
 	struct tm *time_begin;
 	struct tm *time_end;
-	//char *time_gaps = NULL;
+	char *time_gaps = NULL;
+	char *tmp_time_gap = NULL;
 	char *str_time_begin = NULL;
 	char *str_time_end = NULL;
 	int time_tolerance = 300;
@@ -105,11 +111,12 @@ char *db_create_time_gaps() {
 
 	str_time_begin = malloc(20);
 	str_time_end = malloc(20);
+	asprintf(&time_gaps," ");
 
 	// date format: 2012-06-27 22:02:55
-	for(i=0; i<MAXDAYSTODEVIATION; i++) {
+	for(i=0; i<MAXENTRIESTODEVIATION; i++) {
 
-		previous_week = now - (i * 60 * 60 * 24 * 7); // one week
+		previous_week = now - (i * 60 * 60 * 24 * SAZONALITY); // one week
 
 		before = previous_week - time_tolerance;
 		after = previous_week + time_tolerance;
@@ -123,18 +130,28 @@ char *db_create_time_gaps() {
 		strftime(str_time_begin, 20, "%Y-%m-%d %H:%M:%S", time_begin);
 		strftime(str_time_end, 20, "%Y-%m-%d %H:%M:%S", time_end);
 
+		asprintf(&tmp_time_gap," (entry_time between '%s' and '%s') ", str_time_begin, str_time_end);
+
+		if (i > 0) {
+			time_gaps = realloc(time_gaps, strlen(time_gaps) + 3);
+			strcat(time_gaps,"or");
+		}
+		
+		time_gaps = realloc(time_gaps, strlen(time_gaps) + strlen(tmp_time_gap) + 1);
+		strcat(time_gaps,tmp_time_gap);
+
 		free(time_begin);
 		free(time_end);
-
-		printf("%s -> %s\n",str_time_begin,str_time_end);
+		free(tmp_time_gap);
+		tmp_time_gap = NULL;
 
 
 	}
 
-	
+	free(str_time_begin);
+	free(str_time_end);
 
-	//return time_gaps;
-	return NULL; 
+	return time_gaps; 
 
 }
 

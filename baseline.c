@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
 	char *line = NULL;
 	char *line_bkp = NULL;
 	struct metric_t *mt;
+	struct metric_t *aux_mt;
 	struct metric_t *metrics_root;
 	struct deviation_t *deviation;
 	int ret;
@@ -103,6 +104,15 @@ int main(int argc, char *argv[]) {
 		free(deviation);
 	}
 
+	mt = metrics_root;
+	while(mt) {
+		aux_mt = mt->next;
+		free(mt->name);
+		free(mt->unit);
+		free(mt);
+		mt = aux_mt;		
+	}
+
 	free(command_line);
 	free(line);
 	db_close_conn();
@@ -112,25 +122,27 @@ int main(int argc, char *argv[]) {
 
 struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 
-	struct deviation_t *dv;
-	float deviation;
-	float average;
-	float aux;
-	float tosqrt;
-	float sum;
-	int i;
+	struct deviation_t *dv = NULL;
+	float deviation = 0;
+	float average = 0;
+	float aux = 0;
+	float tosqrt = 0;
+	float sum = 0;
+	int i = 0;
 	float *last_values = NULL;
 
 
-	last_values = malloc(sizeof(float) * MAXDAYSTODEVIATION);
-	for(i=0; i<MAXDAYSTODEVIATION; i++) {
-		*(last_values + i) = -1;
+	last_values = malloc(sizeof(float) * MAXENTRIESTODEVIATION);
+	for(i=0; i<MAXENTRIESTODEVIATION; i++) {
+		*(last_values + i) = (float)-1;
 	}
+
+	db_insert_metric(command_line, mt);
 	
 	db_retrieve_last_values(command_line, mt, last_values);
 	i = 0;
 	sum = 0;
-	while(*(last_values + i) != -1 && i < MAXDAYSTODEVIATION) {
+	while(*(last_values + i) != -1 && i < MAXENTRIESTODEVIATION) {
 		sum += *(last_values + i);
 		i++;
 	}
@@ -139,19 +151,15 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 		average = sum / i;
 
 		i = 0;
-		while(*(last_values + i) != -1 && i < MAXDAYSTODEVIATION) {
-			//printf("%d -> %.3f\n",i, *(last_values + i));
-
+		while(*(last_values + i) != -1 && i < MAXENTRIESTODEVIATION) {
 			aux = *(last_values + i);
 			tosqrt += ( aux - average) * ( aux - average);
 			i++;
-
 		}
 
 		// just to be sure
 		if (i > 0) {
 			deviation = sqrt((double)tosqrt/i);
-			//printf("average: %.3f   deviation: %.3f\n\n",average,deviation);
 		}
 
 	}
@@ -160,7 +168,7 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 	dv->top = average + deviation;
 	dv->bottom = average - deviation;
 
-	db_insert_metric(command_line, mt);
+	free(last_values);
 
 	return dv;
 
@@ -281,6 +289,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 
 	}
 
+	free(metric_string);
 	free(aux_string);
 	regfree(&metric_regex);
 	regfree(&regex);
