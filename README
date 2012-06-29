@@ -1,6 +1,6 @@
 NADA
 Nagios(R) Adaptive Thresholds
-Version: 0.01
+Version: 0.01-alpha
 
 *************** WARNING ***************
 THIS PROJECT IS COMPLETELY EXPERIMENTAL
@@ -11,11 +11,11 @@ THIS PROJECT IS COMPLETELY EXPERIMENTAL
 0 - What is NADA?
     ^^^^^^^^^^^^^
 
-NADA is a brand new project who intents to insert baseline adaptive thresholds
+NADA is a brand new project which intents to insert baseline adaptive thresholds
 to Nagios(R) Monitoring Framework. By "adaptive" i mean a threshold which may
-change through the time, accordingly to a given resource usage.
+change through time, accordingly to a given resource behaviour.
 
-This project is intended to you, who already done yourself a question like: 
+This project is intended to you, who have already done yourself a question like: 
 "How can I avoid false positives when monitoring a given server that every 
 Monday has a higher load average than during the other days?"
 
@@ -24,13 +24,20 @@ Monday has a higher load average than during the other days?"
     ^^^^^^^^^^^^^^^^^
 
 NADA needs a MySQL database running together with Nagios(R). It encapsulates
-your check plugin, parse and store performance data into DB, calculate the 
-standard deviation and create two new metrics, pointing to the top and bottom 
+your check plugin, parses and stores performance data into DB, calculates the 
+standard deviation and creates two new metrics, pointing to the top and bottom 
 of your baseline. If collected value overflow(up or down) the baseline, NADA
 change the plugin return code to CRITICAL thus causing Nagios(R) to alert.
 
-The standard behaviour assumes that you are using a week sazonality, if it's
-not appropriate to you, please may the source be with you.
+NADA' standard behaviour assumes that you are using a week sazonality, if it's
+not appropriate, please may the source be with you.
+
+Let's explain how it works by a simple example:
+
+If a given check occurs just now(let's say: Monday at 11:07 PM), NADA will
+retrieve the last one hundred Monday =~ 11:07 PM check results from DB. It 
+will then calculate the stardard deviation using these one hundred check 
+results and make a good baseline to current check.
 
 
 2. - OK, how can I configure this "thing" ?
@@ -54,14 +61,17 @@ define command{
 3 - Configure is easy, how about compile?
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-At these early stages I have not prepared any how to about compilation, though
+At these early stages I have not prepared any how-to about compilation, though
 it's pretty direct and simple.
 
 You just gonna need a C compiler(of course) and mysql-devel package installed 
 into your system. I leave a simple Makefile together with the project, so, if
 you want to adapt it to your system, go for it, don't forget to send me a diff.
 
-Basically, on these early stages, you are at you own. :-)
+Basically, you just need to set the path to mysql-devel libraries inside
+Makefile and then run:
+
+$ make all
 
 
 4 - How about configuring MySQL ?
@@ -71,12 +81,28 @@ You will find a .sql file together with the package. You basically need to run:
 
 $ mysql -u root -p -A < database-creation.sql 
 
+I have sucessfully compiled it with:
+
+- gcc version 4.6.3 20120306 (Red Hat 4.6.3-2) (GCC)
+- Linux 3.4.2-1.fc16.x86_64 
+- mysql-devel-5.5.24-1.fc16.x86_64
+
 
 5 - Where can I configure database user/password?
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Short answer: change dblayer.c as you desire and recompile. If you want it to be
 easy, maybe you should chew watter :-). Remember, this software is not ready yet, 
-I still have a lot of things to improve.
+I still have a lot of things to improve. Diffs, as usual, are welcome.
 
 
+6 - Why in the hell C?
+    ^^^^^^^^^^^^^^^^^^
+
+The right answer is: because i like it.
+You may find a lot of resources pointing that <put you hype language here> is
+far better than C, but really, really, common! I was just trying to experiment
+my C in the real world and try to help community :-D
+
+If you want to implement a brand new shining NADA version on another hype language,
+please remember to advise me, so i can point a link here to your project.
