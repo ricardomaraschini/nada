@@ -73,6 +73,12 @@ Makefile and then run:
 
 $ make all
 
+I have sucessfully compiled it with:
+
+- gcc version 4.6.3 20120306 (Red Hat 4.6.3-2) (GCC)
+- Linux 3.4.2-1.fc16.x86_64 
+- mysql-devel-5.5.24-1.fc16.x86_64
+
 
 4 - How about configuring MySQL ?
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -80,12 +86,6 @@ $ make all
 You will find a .sql file together with the package. You basically need to run:
 
 $ mysql -u root -p -A < database-creation.sql 
-
-I have sucessfully compiled it with:
-
-- gcc version 4.6.3 20120306 (Red Hat 4.6.3-2) (GCC)
-- Linux 3.4.2-1.fc16.x86_64 
-- mysql-devel-5.5.24-1.fc16.x86_64
 
 
 5 - Where can I configure database user/password?
