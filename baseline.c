@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 	strtok(line_bkp,"|");
 	metrics_root = parse_perfdata(strtok(NULL,"|"));
 	if (metrics_root == NULL) {
-		printf("Error parsing metric data\n");
+		printf("Error parsing metric data - %s\n",line);
 		free(command_line);
 		return UNKNOWN;
 	}
