@@ -11,8 +11,9 @@
 #define FALSE 0
 
 #define OK 0
-#define UNKNOWN 3
 #define ERROR 1
+#define CRITICAL 2
+#define UNKNOWN 3
 #define MAXPLUGINOUTPUT 2048
 #define MAXMETRICS 10
 #define MAXMETRICNAME 256

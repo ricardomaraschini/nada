@@ -28,10 +28,13 @@ int main(int argc, char *argv[]) {
 	char *command_line = NULL;
 	char *line = NULL;
 	char *line_bkp = NULL;
+	char *baseline_perfdata = NULL;
+	char *baseline_perfdata_aux = NULL;
 	struct metric_t *mt;
 	struct metric_t *aux_mt;
 	struct metric_t *metrics_root;
 	struct deviation_t *deviation;
+	int exit_code = 0;
 	int ret;
 
 	if (argc <= 1) {
@@ -78,7 +81,9 @@ int main(int argc, char *argv[]) {
 
 	pclose(command);
 
-	line_bkp = line;
+	line_bkp = malloc(strlen(line) + 1);
+	strcpy(line_bkp,line);
+	line[strlen(line) - 1] = '\x0';
 
 	strtok(line_bkp,"|");
 	metrics_root = parse_perfdata(strtok(NULL,"|"));
@@ -96,13 +101,26 @@ int main(int argc, char *argv[]) {
 		return UNKNOWN;
 	}
 
+	baseline_perfdata = malloc(1);
+	*baseline_perfdata = '\x0';
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
 		deviation = get_deviation(command_line,mt);
-		printf("%.3f,", deviation->top );
-		printf("%.3f,", mt->value );
-		printf("%.3f\n", deviation->bottom );
+
+		// baseline has been broken
+		if (mt->value < deviation->bottom || mt->value > deviation->top) {
+			// change return code
+			exit_code = CRITICAL;
+		} 
+
+		asprintf(&baseline_perfdata_aux," %s_top=%.3f;;;; %s_bottom=%.3f;;;; ", mt->name, deviation->top, mt->name, deviation->bottom);
+		baseline_perfdata = realloc(baseline_perfdata, strlen(baseline_perfdata) + strlen(baseline_perfdata_aux) + 1);
+		strcat(baseline_perfdata,baseline_perfdata_aux);
+		free(baseline_perfdata_aux);
+
 		free(deviation);
 	}
+
+	printf( "%s %s\n", line, baseline_perfdata);
 
 	mt = metrics_root;
 	while(mt) {
@@ -117,7 +135,7 @@ int main(int argc, char *argv[]) {
 	free(line);
 	db_close_conn();
 
-	return OK;
+	return exit_code;
 }
 
 struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
