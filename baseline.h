@@ -6,6 +6,8 @@
 #include <math.h>
 #include <time.h>
 #include <mysql/mysql.h>
+#include "iniparser/dictionary.h"
+#include "iniparser/iniparser.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -29,6 +31,10 @@
 #define METRICCRITICAL 5
 #define METRICMIN 6
 #define METRICMAX 7 
+
+#ifndef INSTALLPATH
+#error Undefined INSTALLPATH
+#endif
 
 
 struct metric_t {
@@ -58,3 +64,6 @@ void db_close_conn();
 char *db_create_time_gaps();
 char *escape_string(char *from);
 int do_query(char *q, int return_values, MYSQL_RES **result);
+int db_set_dbserver(char *srv);
+int db_set_dbpassword(char *pass);
+int db_set_dbuser(char *usr);

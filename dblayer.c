@@ -16,12 +16,29 @@
 
 #include "baseline.h"
 
-MYSQL *conn;
-char *server = "localhost";
-char *user = "root";
-char *password = ""; 
-char *database = "nagios_baseline";
+MYSQL *conn = NULL;
+char *db_server = NULL;
+char *db_user = NULL;
+char *db_password = NULL; 
+char *db_database = "nagios_baseline";
 
+int db_set_dbserver(char *srv) {
+	db_server = malloc(strlen(srv) + 1);
+	strcpy(db_server,srv);
+	return OK;
+}
+
+int db_set_dbuser(char *usr) {
+	db_user = malloc(strlen(usr) + 1);
+	strcpy(db_user,usr);
+	return OK;
+}
+
+int db_set_dbpassword(char *pass) {
+	db_password = malloc(strlen(pass) + 1);
+	strcpy(db_password,pass);
+	return OK;
+}
 
 int db_insert_metric(char *command_line, struct metric_t *mt) {
 
@@ -158,7 +175,7 @@ char *db_create_time_gaps() {
 int db_open_conn() {
 
 	conn = mysql_init(NULL);
-	if ( !mysql_real_connect(conn, server,user, password, database, 0, NULL, 0)) {
+	if ( !mysql_real_connect(conn, db_server, db_user, db_password, db_database, 0, NULL, 0)) {
 		return ERROR;
 	}
 
@@ -167,6 +184,9 @@ int db_open_conn() {
 
 void db_close_conn() {
 	mysql_close(conn);
+	free(db_server);
+	free(db_user);
+	free(db_password);
 }
 
 char *escape_string(char *from) {

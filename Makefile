@@ -1,7 +1,21 @@
+INSTALLPATH=/opt/nada
+CC=gcc
+LIBS=-lm -lmysqlclient
+CFLAGS=-g -L/usr/lib64/mysql -Wall
+MACROS=-D"INSTALLPATH=\"$(INSTALLPATH)\""
+
 all: baseline
 
 baseline: 
-	gcc -g -L/usr/lib64/mysql -Wall -lm -lmysqlclient -o baseline dblayer.c baseline.c
+	$(CC) $(CFLAGS) $(LIBS) $(MACROS) -o nada dblayer.c baseline.c iniparser/iniparser.c iniparser/dictionary.c
 
 clean:
-	rm -rf baseline
+	rm -rf nada 
+
+install:
+	mkdir -p $(INSTALLPATH) 
+	cp -Rfp nada $(INSTALLPATH)
+	cp -Rfp baseline.ini $(INSTALLPATH) 
+
+uninstall:
+	rm -rf $(INSTALLPATH)

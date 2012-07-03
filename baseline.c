@@ -27,17 +27,55 @@ int main(int argc, char *argv[]) {
 	char *line_bkp = NULL;
 	char *baseline_perfdata = NULL;
 	char *baseline_perfdata_aux = NULL;
+	char *ini_path;
+	char *aux = NULL;
 	struct metric_t *mt;
 	struct metric_t *aux_mt;
 	struct metric_t *metrics_root;
 	struct deviation_t *deviation;
 	int exit_code = 0;
 	int ret;
+	dictionary *ini;
 
 	if (argc <= 1) {
 		printf("Invalid check command supplied\n");
 		return UNKNOWN;
 	}
+
+	asprintf(&ini_path,"%s/baseline.ini",INSTALLPATH);
+
+	ini = iniparser_load(ini_path);
+	if (ini == NULL) {
+		printf("Unable to process %s file\n",ini_path);
+		return UNKNOWN;
+	}
+
+        // i personally dont like to use 'extern' variables 
+        // with this approach we can easily provide more backends support
+	aux = iniparser_getstring(ini, "database:host", NULL);
+	if (aux) {
+		db_set_dbserver(aux);
+	} else {
+		db_set_dbserver("localhost");
+	}
+
+	aux = iniparser_getstring(ini, "database:user", NULL);
+	if (aux) {
+		db_set_dbuser(aux);
+	} else {
+		db_set_dbuser("root");
+	}
+
+	aux = iniparser_getstring(ini, "database:password", NULL);
+	if (aux) {
+		db_set_dbpassword(aux);
+	} else {
+		db_set_dbpassword("");
+	}
+
+	// we no longer need dictionary
+	iniparser_freedict(ini);
+	free(ini_path);
 
 	command_line = read_command_line(argc,argv);
 	if (command_line == NULL) {
