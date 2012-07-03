@@ -12,8 +12,8 @@ THIS PROJECT IS COMPLETELY EXPERIMENTAL
     ^^^^^^^^^^^^^^
 
 !NADA is a brand new project which intents to insert baseline adaptive thresholds
-to Nagios(R) or Icinga monitoring frameworks. By "adaptive" i mean a threshold which may
-change through time, accordingly to a given resource behaviour.
+to Nagios(R) or Icinga monitoring frameworks. By "adaptive" i mean a threshold which
+may change through time, accordingly to a given resource behaviour.
 
 This project is intended to you, who have already done yourself a question like: 
 "How can I avoid false positives when monitoring a given server that every 

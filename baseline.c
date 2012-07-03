@@ -50,8 +50,8 @@ int main(int argc, char *argv[]) {
 		return UNKNOWN;
 	}
 
-        // i personally dont like to use 'extern' variables 
-        // with this approach we can easily provide more backends support
+	// i personally dont like to use 'extern' variables 
+	//  with this approach we can easily provide more backends support
 	aux = iniparser_getstring(ini, "database:host", NULL);
 	if (aux) {
 		db_set_dbserver(aux);
