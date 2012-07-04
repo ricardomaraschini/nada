@@ -1,7 +1,7 @@
 INSTALLPATH=/opt/nada
 CC=gcc
 LIBS=-lm -lmysqlclient
-CFLAGS=-g -L/usr/lib64/mysql -Wall
+CFLAGS=-g -L/usr/lib64/mysql -L/usr/lib/mysql -Wall
 MACROS=-D"INSTALLPATH=\"$(INSTALLPATH)\""
 
 all: baseline
