@@ -8,4 +8,4 @@ CREATE TABLE `history` (
   `metric` varchar(256) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
-ALTER TABLE command_date ADD INDEX(comand_line,entry_time);
+ALTER TABLE history ADD INDEX idx_command_time(command_line,entry_time);
