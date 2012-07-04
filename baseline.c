@@ -14,7 +14,7 @@
  * $  make all
  *
  * Execute:
- * $  ./baseline /path/to/a/nagios/plugin/wich/perfdata
+ * $  ./nada /path/to/a/nagios/plugin/wich/perfdata
  *
  */
 #include "baseline.h"
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// i personally dont like to use 'extern' variables 
-	//  with this approach we can easily provide more backends support
+	// with this approach we can easily provide more backends support
 	aux = iniparser_getstring(ini, "database:host", NULL);
 	if (aux) {
 		db_set_dbserver(aux);

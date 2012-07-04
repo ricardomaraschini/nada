@@ -7,3 +7,5 @@ CREATE TABLE `history` (
   `value` float DEFAULT NULL,
   `metric` varchar(256) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+ALTER TABLE command_date ADD INDEX(comand_line,entry_time);
