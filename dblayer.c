@@ -86,7 +86,7 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	time_gaps = db_create_time_gaps();
 
 	asprintf( &query,
-	          "select value from history where command_line='%s' and metric='%s' or (%s) order by entry_time desc limit %d",
+	          "select value from history where command_line='%s' and metric='%s' and (%s) order by entry_time desc limit %d",
 	          prot_cmd_line,
 	          prot_metric_name,
 	          time_gaps,
