@@ -147,7 +147,16 @@ int main(int argc, char *argv[]) {
 			exit_code = CRITICAL;
 		} 
 
-		asprintf(&baseline_perfdata_aux," %s_top=%.3f;;;; %s_bottom=%.3f;;;; ", mt->name, deviation->top, mt->name, deviation->bottom);
+		asprintf( &baseline_perfdata_aux,
+		          " %s_top=%.3f%s;;;; %s_bottom=%.3f%s;;;; ", 
+		          mt->name, 
+		          deviation->top,
+		          mt->unit, 
+		          mt->name, 
+		          deviation->bottom,
+		          mt->unit
+		);
+
 		baseline_perfdata = realloc(baseline_perfdata, strlen(baseline_perfdata) + strlen(baseline_perfdata_aux) + 1);
 		strcat(baseline_perfdata,baseline_perfdata_aux);
 		free(baseline_perfdata_aux);
