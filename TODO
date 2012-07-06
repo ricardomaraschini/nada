@@ -1,0 +1,10 @@
+- MININUM NUMBER OF ENTRIES
+
+One of the main problems with !NADA is that if we have few entries 
+to calculate baseline, we gonna create quite a lot of false positives.
+To solve this I think we need to implement the following:
+
+	- Insert a fixed mininum number of entries for baseline 
+	  calculation
+	- Use script returned value if number of entries < mininum 
+	  number of entries
