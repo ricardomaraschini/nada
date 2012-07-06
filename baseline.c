@@ -73,6 +73,13 @@ int main(int argc, char *argv[]) {
 		db_set_dbpassword("");
 	}
 
+	aux = iniparser_getstring(ini, "general:maxentries", NULL);
+	if (aux) {
+		db_set_max_entries(atoi(aux));
+	} else {
+		db_set_max_entries(MAXENTRIESTODEVIATION);
+	}
+
 	// we no longer need dictionary
 	iniparser_freedict(ini);
 	free(ini_path);
@@ -191,11 +198,13 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 	float tosqrt = 0;
 	float sum = 0;
 	int i = 0;
+	int max_entries = MAXENTRIESTODEVIATION;
 	float *last_values = NULL;
 
+	max_entries = db_get_max_entries();
 
-	last_values = malloc(sizeof(float) * MAXENTRIESTODEVIATION);
-	for(i=0; i<MAXENTRIESTODEVIATION; i++) {
+	last_values = malloc(sizeof(float) * max_entries); 
+	for(i=0; i<max_entries; i++) {
 		*(last_values + i) = (float)-1;
 	}
 
@@ -204,7 +213,7 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 	db_retrieve_last_values(command_line, mt, last_values);
 	i = 0;
 	sum = 0;
-	while(*(last_values + i) != -1 && i < MAXENTRIESTODEVIATION) {
+	while(*(last_values + i) != -1 && i < max_entries) {
 		sum += *(last_values + i);
 		i++;
 	}
@@ -213,7 +222,7 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 		average = sum / i;
 
 		i = 0;
-		while(*(last_values + i) != -1 && i < MAXENTRIESTODEVIATION) {
+		while(*(last_values + i) != -1 && i < max_entries) {
 			aux = *(last_values + i);
 			tosqrt += ( aux - average) * ( aux - average);
 			i++;

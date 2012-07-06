@@ -67,3 +67,5 @@ int do_query(char *q, int return_values, MYSQL_RES **result);
 int db_set_dbserver(char *srv);
 int db_set_dbpassword(char *pass);
 int db_set_dbuser(char *usr);
+void db_set_max_entries(int entries);
+int db_get_max_entries();

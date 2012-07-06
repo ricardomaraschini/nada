@@ -16,6 +16,7 @@
 
 #include "baseline.h"
 
+int max_entries;
 MYSQL *conn = NULL;
 char *db_server = NULL;
 char *db_user = NULL;
@@ -40,6 +41,14 @@ int db_set_dbpassword(char *pass) {
 	return OK;
 }
 
+void db_set_max_entries(int entries) {
+	max_entries = entries;
+}
+
+int db_get_max_entries() {
+	return max_entries;
+}
+
 int db_insert_metric(char *command_line, struct metric_t *mt) {
 
 	char *query = NULL;
@@ -56,7 +65,6 @@ int db_insert_metric(char *command_line, struct metric_t *mt) {
 	          mt->value,
 	          prot_metric_name
 	);
-
 
 	ret = do_query(query, FALSE, NULL);
 
@@ -90,7 +98,7 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	          prot_cmd_line,
 	          prot_metric_name,
 	          time_gaps,
-	          MAXENTRIESTODEVIATION
+	          max_entries
 	);
 
 	do_query(query, TRUE, &result);
@@ -131,7 +139,7 @@ char *db_create_time_gaps() {
 	asprintf(&time_gaps," ");
 
 	// date format: 2012-06-27 22:02:55
-	for(i=0; i<MAXENTRIESTODEVIATION; i++) {
+	for(i=0; i<max_entries; i++) {
 
 		previous_week = now - (i * 60 * 60 * 24 * SAZONALITY); // one week
 
