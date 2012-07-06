@@ -22,6 +22,7 @@
 
 #define DEVIATIONTOLERANCE 1.05
 #define MAXENTRIESTODEVIATION 100 
+#define MINENTRIESTODEVIATION 10
 #define SAZONALITY 7
 
 #define METRICNAME 1 
@@ -55,7 +56,7 @@ struct deviation_t {
 
 char *read_command_line(int argc, char *argv[]);
 struct metric_t *parse_perfdata(char *perfdata);
-struct deviation_t *get_deviation(char *command_line, struct metric_t *mt);
+struct deviation_t *get_deviation(char *command_line, struct metric_t *mt, int *collected_entries);
 
 int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);

@@ -33,8 +33,10 @@ int main(int argc, char *argv[]) {
 	struct metric_t *aux_mt;
 	struct metric_t *metrics_root;
 	struct deviation_t *deviation;
-	int exit_code = 0;
+	int exit_code = OK;
 	int ret;
+	int min_entries = 0;
+	int collected_entries = 0;
 	dictionary *ini;
 
 	if (argc <= 1) {
@@ -78,6 +80,13 @@ int main(int argc, char *argv[]) {
 		db_set_max_entries(atoi(aux));
 	} else {
 		db_set_max_entries(MAXENTRIESTODEVIATION);
+	}
+
+	aux = iniparser_getstring(ini, "general:minentries", NULL);
+	if (aux) {
+		min_entries = atoi(aux);
+	} else {
+		min_entries = MINENTRIESTODEVIATION;
 	}
 
 	// we no longer need dictionary
@@ -146,13 +155,18 @@ int main(int argc, char *argv[]) {
 	baseline_perfdata = malloc(1);
 	*baseline_perfdata = '\x0';
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
-		deviation = get_deviation(command_line,mt);
+		deviation = get_deviation(command_line, mt, &collected_entries);
 
-		// baseline has been broken
-		if (mt->value < deviation->bottom || mt->value > deviation->top) {
-			// change return code
-			exit_code = CRITICAL;
-		} 
+
+		if (collected_entries > min_entries) {
+
+			// baseline has been broken
+			if (mt->value < deviation->bottom || mt->value > deviation->top) {
+				// change return code
+				exit_code = CRITICAL;
+			}
+ 
+		}
 
 		asprintf( &baseline_perfdata_aux,
 		          " %s_top=%.3f%s;;;; %s_bottom=%.3f%s;;;; ", 
@@ -189,7 +203,7 @@ int main(int argc, char *argv[]) {
 	return exit_code;
 }
 
-struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
+struct deviation_t *get_deviation(char *command_line, struct metric_t *mt, int *collected_entries) {
 
 	struct deviation_t *dv = NULL;
 	float deviation = 0;
@@ -202,6 +216,7 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 	float *last_values = NULL;
 
 	max_entries = db_get_max_entries();
+	*collected_entries = 0;
 
 	last_values = malloc(sizeof(float) * max_entries); 
 	for(i=0; i<max_entries; i++) {
@@ -217,6 +232,8 @@ struct deviation_t *get_deviation(char *command_line, struct metric_t *mt) {
 		sum += *(last_values + i);
 		i++;
 	}
+
+	*collected_entries = i;
 
 	if (i > 0) {
 		average = sum / i;
