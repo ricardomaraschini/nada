@@ -130,7 +130,9 @@ int main(int argc, char *argv[]) {
 		return OK;
 	}
 
-	pclose(command);
+	// plugin output returned value becames
+	// our default output return code
+	exit_code = WEXITSTATUS(pclose(command));
 
 	line_bkp = malloc(strlen(line) + 1);
 	strcpy(line_bkp,line);
