@@ -84,6 +84,13 @@ I have sucessfully compiled it with:
 - Linux 3.4.2-1.fc16.x86_64 
 - mysql-devel-5.5.24-1.fc16.x86_64
 
+and also
+
+- gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
+- Linux 2.6.18-308.1.1.el5PAE
+- mysql-devel-5.0.95-1.el5_7.1
+
+
 To uninstall, as root:
 
 $ make uninstall
