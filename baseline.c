@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 		return UNKNOWN;
 	}
 
-	line = malloc(MAXPLUGINOUTPUT);
+	line = malloc(MAXPLUGINOUTPUT + 1);
 	if (line == NULL) {
 		printf("Unable to allocate memory\n");
 		free(command_line);
