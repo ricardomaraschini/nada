@@ -104,8 +104,50 @@ You can change the user, password and host to your MySQL server editing
 baseline.ini at root source directory before installing or, after running 
 "make install", edit it under /opt/nada/.
 
+6 - Important - baseline.ini explained
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+minentries=X
+	If !NADA couldn't find at least X entries on its database, it will
+	not apply baseline calculation to determine check state. In this 
+	specific case, !NADA will return the same code returned to it by
+	plugin execution. As we need a reasonable quantity of historic data
+	to be able to calculate standard deviation, i choosed to let at 
+	user choise what's the minimun number of entries before start to
+	actually change plugin's output.
 
-6 - Why in the hell C?
+	Example:
+	If you set this value to 10, using !NADA in a service which checks
+	at every 5 minutes, it will take =~ 10 weeks to actually start
+	applying baseline calculation. 
+
+	Otherwise if you have a service wich checks at every minute, !NADA 
+	probably will start calculate baseline within =~ 2 weeks. This is 
+	an algorithm side effect: internally, on query execution, it applies 
+	by default a tolerance of 5 minutes when retrieveng data of last 
+	weeks, so, for example, a execution today Fri 14:30:00 will fetch
+	data from all last Fridays between 14:28:30 and 14:32:30.
+
+maxentries=X
+	The opposite of the option above. This determines the maximum 
+	number of historic data retrieved to calculate baseline. Pay 
+	attention to the performance issues implied with this specific 
+	option.
+
+
+[DATABASE]
+host=localhost
+	MySQL server's IP address.
+
+user=root
+	MySQL user with write/read permissions to `nagios_baseline`
+	database.
+
+password=
+	MySQL users's password.
+
+
+
+7 - Why in the hell C?
     ^^^^^^^^^^^^^^^^^^
 
 The right answer is: because i like it.
