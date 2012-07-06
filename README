@@ -146,8 +146,7 @@ host=localhost
 	MySQL server's IP address.
 
 user=root
-	MySQL user with write/read permissions to `nagios_baseline`
-	database.
+	MySQL user with write/read permissions to `nada` database.
 
 password=
 	MySQL users's password.

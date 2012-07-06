@@ -21,7 +21,7 @@ MYSQL *conn = NULL;
 char *db_server = NULL;
 char *db_user = NULL;
 char *db_password = NULL; 
-char *db_database = "nagios_baseline";
+char *db_database = "nada";
 
 int db_set_dbserver(char *srv) {
 	db_server = malloc(strlen(srv) + 1);

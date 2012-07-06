@@ -1,5 +1,5 @@
-CREATE DATABASE nagios_baseline;
-USE nagios_baseline;
+CREATE DATABASE nada;
+USE nada;
 
 CREATE TABLE `history` (
   `command_line` varchar(500) DEFAULT NULL,
