@@ -143,6 +143,7 @@ int main(int argc, char *argv[]) {
 	if (metrics_root == NULL) {
 		printf("Error parsing metric data - %s\n",line);
 		free(command_line);
+		free(line_bkp);
 		return UNKNOWN;
 	}
 
@@ -151,6 +152,7 @@ int main(int argc, char *argv[]) {
 		printf("Unable to connect to mysql database\n");
 		free(command_line);
 		free(line);
+		free(line_bkp);
 		return UNKNOWN;
 	}
 
@@ -200,6 +202,8 @@ int main(int argc, char *argv[]) {
 
 	free(command_line);
 	free(line);
+	free(line_bkp);
+	free(baseline_perfdata);
 	db_close_conn();
 
 	return exit_code;
