@@ -70,3 +70,5 @@ int db_set_dbpassword(char *pass);
 int db_set_dbuser(char *usr);
 void db_set_max_entries(int entries);
 int db_get_max_entries();
+int db_insert_command_line(char *command_line);
+int db_get_command_line_id(char *command_line);

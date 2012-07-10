@@ -49,19 +49,72 @@ int db_get_max_entries() {
 	return max_entries;
 }
 
+int db_insert_command_line(char *command_line) {
+
+	char *query;
+	MYSQL_RES *result = NULL;
+	MYSQL_ROW row;
+	int id = 0;
+
+	asprintf(&query,"insert into commands values ('','%s')",command_line);
+	do_query(query, FALSE, NULL);
+	free(query);
+	query = NULL;
+
+	asprintf(&query,"select LAST_INSERT_ID()");
+	do_query(query, TRUE, &result);
+	while ( (row = mysql_fetch_row(result)) ) {
+		id = atoi(row[0]);
+	}
+	mysql_free_result(result);
+	free(query);
+	
+	return id;
+
+}
+
+int db_get_command_line_id(char *command_line) {
+
+	int id;
+	char *query = NULL;
+	MYSQL_RES *result = NULL;
+	MYSQL_ROW row;
+
+	asprintf(&query, "select id from commands where command_line='%s'",command_line);
+
+	id = 0;
+	do_query(query, TRUE, &result);
+	while ( (row = mysql_fetch_row(result)) ) {
+		id = atoi(row[0]);
+	}
+
+	mysql_free_result(result);
+	free(query);
+
+	return id;
+
+}
+
 int db_insert_metric(char *command_line, struct metric_t *mt) {
 
 	char *query = NULL;
 	char *prot_cmd_line = NULL;
 	char *prot_metric_name = NULL;
 	int ret;
+	int command_line_id;
 
 	prot_cmd_line = escape_string(command_line);
 	prot_metric_name = escape_string(mt->name);
 
+	command_line_id = db_get_command_line_id(prot_cmd_line);
+	if (command_line_id == 0) {
+		// a new command line
+		command_line_id = db_insert_command_line(prot_cmd_line);
+	}
+
 	asprintf( &query,
-	          "insert into history values( '%s', now(), %f, '%s');",
-	          prot_cmd_line,
+	          "insert into history values( %d, now(), %f, '%s');",
+	          command_line_id,
 	          mt->value,
 	          prot_metric_name
 	);
@@ -87,15 +140,18 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	char *time_gaps = NULL;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row;
+	int metric_id = 0;
 
 	prot_cmd_line = escape_string(command_line);
 	prot_metric_name = escape_string(mt->name);
 
+	metric_id = db_get_command_line_id(prot_cmd_line);
+
 	time_gaps = db_create_time_gaps();
 
 	asprintf( &query,
-	          "select value from history where command_line='%s' and metric='%s' and (%s) order by entry_time desc limit %d",
-	          prot_cmd_line,
+	          "select value from history where command_line_id=%d and metric='%s' and (%s) order by entry_time desc limit %d",
+	          metric_id,
 	          prot_metric_name,
 	          time_gaps,
 	          max_entries
