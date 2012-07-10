@@ -125,21 +125,31 @@ minentries=X
 
 	Example:
 	If you set this value to 10, using !NADA in a service which checks
-	at every 5 minutes, it will take =~ 10 weeks to actually start
-	applying baseline calculation. 
+	at every 5 minutes, it will take =~ 10 weeks(considering a sazonality
+	value of 7 - see bellow) to actually start applying baseline 
+	calculation.
 
 	Otherwise if you have a service wich checks at every minute, !NADA 
-	probably will start to calculate the baseline within =~ 2 weeks. This 
-	is an algorithm side effect: internally, on query execution, it applies 
-	by default a tolerance of 5 minutes when retrieveng data of last 
-	weeks, so, for example, a execution today Fri 14:30:00 will fetch
-	data from all last Fridays between 14:28:30 and 14:32:30.
+	probably will start to calculate the baseline within =~ 2 weeks(again
+	considering a sazonality value equal to 7). This  is an algorithm side 
+	effect: internally, on query execution, it applies by default a 
+	tolerance of 5 minutes when retrieveng data of last  weeks, so, for 
+	example, a execution today Fri 14:30:00 will fetch data from all last
+	Fridays between 14:28:30 and 14:32:30.
 
 maxentries=X
 	The opposite of the option above. This determines the maximum 
 	number of historic data retrieved to calculate baseline. Pay 
 	attention to the performance issues implied with this specific 
 	option.
+
+sazonality=X
+	With this option, you specify in days how long your service sazonality
+	is. So, for example, if your monitored service has a behaviour which
+	repeats itself every day(a server which load has a considerable 
+	increase every midday) you may define X to 1. In the other hand, if 
+	your service has an increase, let's say, every monday, you may define 
+	sazonality to 7(in other words, one week).
 
 
 [DATABASE]

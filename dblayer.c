@@ -17,6 +17,7 @@
 #include "baseline.h"
 
 int max_entries;
+int sazonality;
 MYSQL *conn = NULL;
 char *db_server = NULL;
 char *db_user = NULL;
@@ -26,6 +27,11 @@ char *db_database = "nada";
 int db_set_dbserver(char *srv) {
 	db_server = malloc(strlen(srv) + 1);
 	strcpy(db_server,srv);
+	return OK;
+}
+
+int db_set_sazonality(int saz) {
+	sazonality = saz;
 	return OK;
 }
 
@@ -197,7 +203,7 @@ char *db_create_time_gaps() {
 	// date format: 2012-06-27 22:02:55
 	for(i=0; i<max_entries; i++) {
 
-		previous_week = now - (i * 60 * 60 * 24 * SAZONALITY); // one week
+		previous_week = now - (i * 60 * 60 * 24 * sazonality);
 
 		before = previous_week - time_tolerance;
 		after = previous_week + time_tolerance;

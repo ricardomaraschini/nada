@@ -3,6 +3,7 @@ This file contains history of changes for !NADA
 0.2 - Mon Jul  9 21:07:55 BRT 2012
 	- Splitted history table into two different entities to avoid
 	  unneeded info replication
+	- Added sazonality as a variable option
 
 0.1-alpha 
 	- Initial release

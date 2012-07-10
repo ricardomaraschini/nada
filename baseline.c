@@ -89,6 +89,13 @@ int main(int argc, char *argv[]) {
 		min_entries = MINENTRIESTODEVIATION;
 	}
 
+	aux = iniparser_getstring(ini, "general:sazonality", NULL);
+	if (aux) {
+		db_set_sazonality(atoi(aux));
+	} else {
+		db_set_sazonality(SAZONALITY);
+	}
+
 	// we no longer need dictionary
 	iniparser_freedict(ini);
 	free(ini_path);
