@@ -75,26 +75,9 @@ int main(int argc, char *argv[]) {
 		db_set_dbpassword("");
 	}
 
-	aux = iniparser_getstring(ini, "general:maxentries", NULL);
-	if (aux) {
-		db_set_max_entries(atoi(aux));
-	} else {
-		db_set_max_entries(MAXENTRIESTODEVIATION);
-	}
-
-	aux = iniparser_getstring(ini, "general:minentries", NULL);
-	if (aux) {
-		min_entries = atoi(aux);
-	} else {
-		min_entries = MINENTRIESTODEVIATION;
-	}
-
-	aux = iniparser_getstring(ini, "general:sazonality", NULL);
-	if (aux) {
-		db_set_sazonality(atoi(aux));
-	} else {
-		db_set_sazonality(SAZONALITY);
-	}
+	db_set_max_entries( iniparser_getint(ini, "general:maxentries", MAXENTRIESTODEVIATION) );
+	db_set_sazonality( iniparser_getint(ini, "general:sazonality", SAZONALITY) );
+	min_entries = iniparser_getint(ini, "general:minentries", MINENTRIESTODEVIATION);
 
 	// we no longer need dictionary
 	iniparser_freedict(ini);
