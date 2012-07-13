@@ -121,7 +121,7 @@ minentries=X
 	plugin execution. As we need a reasonable amount of historic data
 	to be able to calculate the standard deviation, I chose to let it 
 	at user choise what's the minimun number of entries before start to
-	actually change plugin's output.
+	actually change plugin's output. X must be an integer.
 
 	Example:
 	If you set this value to 10, using !NADA in a service which checks
@@ -141,7 +141,7 @@ maxentries=X
 	The opposite of the option above. This determines the maximum 
 	number of historic data retrieved to calculate baseline. Pay 
 	attention to the performance issues implied with this specific 
-	option.
+	option. X must be an integer.
 
 sazonality=X
 	With this option, you specify in days how long your service sazonality
@@ -149,7 +149,13 @@ sazonality=X
 	repeats itself every day(a server which load has a considerable 
 	increase every midday) you may define X to 1. In the other hand, if 
 	your service has an increase, let's say, every monday, you may define 
-	sazonality to 7(in other words, one week).
+	sazonality to 7(in other words, one week). X must be an integer.
+
+tolerance=X
+	After standard deviation calc, a tolerance index is applied before
+	define resource's top and bottom limits. X must be an integer, 
+	and it should represent an acceptable percentage tolerance on
+	monitored resource usage.
 
 
 [DATABASE]
