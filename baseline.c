@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 	db_set_max_entries( iniparser_getint(ini, "general:maxentries", MAXENTRIESTODEVIATION) );
 	db_set_sazonality( iniparser_getint(ini, "general:sazonality", SAZONALITY) );
 	min_entries = iniparser_getint(ini, "general:minentries", MINENTRIESTODEVIATION);
-	tolerance = iniparser_getint(ini, "general:tolerance", DEVIATIONTOLERANCE) / 100 + 1;
+	tolerance = (float)iniparser_getint(ini, "general:tolerance", DEVIATIONTOLERANCE) / 100 + 1;
 
 	// we no longer need dictionary
 	iniparser_freedict(ini);
