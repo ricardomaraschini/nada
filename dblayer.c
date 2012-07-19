@@ -146,18 +146,18 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	char *time_gaps = NULL;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row;
-	int metric_id = 0;
+	int command_line_id = 0;
 
 	prot_cmd_line = escape_string(command_line);
 	prot_metric_name = escape_string(mt->name);
 
-	metric_id = db_get_command_line_id(prot_cmd_line);
+	command_line_id = db_get_command_line_id(prot_cmd_line);
 
 	time_gaps = db_create_time_gaps();
 
 	asprintf( &query,
 	          "select value from history where command_line_id=%d and metric='%s' and (%s) order by entry_time desc limit %d",
-	          metric_id,
+	          command_line_id,
 	          prot_metric_name,
 	          time_gaps,
 	          max_entries
