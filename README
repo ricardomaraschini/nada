@@ -157,6 +157,11 @@ tolerance=X
 	and it should represent an acceptable percentage tolerance on
 	monitored resource usage.
 
+allownegatives=[yes|no]
+	This options defines if after the calc for deviation has been made,
+	the value for bottom boundary will be able to remain below 0(zero).
+	If this option is defined to 'no', and the bottom boundary reamains
+	below zero, bottom line will become 0.
 
 [DATABASE]
 host=localhost

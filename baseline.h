@@ -56,7 +56,12 @@ struct deviation_t {
 
 char *read_command_line(int argc, char *argv[]);
 struct metric_t *parse_perfdata(char *perfdata);
-struct deviation_t *get_deviation(char *command_line, struct metric_t *mt, int *collected_entries, float tolerance);
+struct deviation_t *get_deviation( char *command_line, 
+                                   struct metric_t *mt, 
+                                   int *collected_entries, 
+                                   float tolerance,
+                                   int allow_negatives
+);
 
 int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);

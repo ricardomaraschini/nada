@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
 	int ret;
 	int min_entries = 0;
 	int collected_entries = 0;
+	int allow_negatives = TRUE;
 	float tolerance = 0;
 	dictionary *ini;
 
@@ -79,6 +80,7 @@ int main(int argc, char *argv[]) {
 	db_set_max_entries( iniparser_getint(ini, "general:maxentries", MAXENTRIESTODEVIATION) );
 	db_set_sazonality( iniparser_getint(ini, "general:sazonality", SAZONALITY) );
 	min_entries = iniparser_getint(ini, "general:minentries", MINENTRIESTODEVIATION);
+	allow_negatives = iniparser_getboolean(ini, "general:allownegatives", TRUE);
 	tolerance = (float)iniparser_getint(ini, "general:tolerance", DEVIATIONTOLERANCE) / 100 + 1;
 
 	// we no longer need dictionary
@@ -151,7 +153,13 @@ int main(int argc, char *argv[]) {
 	baseline_perfdata = malloc(1);
 	*baseline_perfdata = '\x0';
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
-		deviation = get_deviation(command_line, mt, &collected_entries, tolerance);
+
+		deviation = get_deviation( command_line, 
+		                           mt, 
+		                           &collected_entries, 
+		                           tolerance,
+		                           allow_negatives
+		);
 
 
 		if (collected_entries > min_entries) {
@@ -204,7 +212,8 @@ int main(int argc, char *argv[]) {
 struct deviation_t *get_deviation( char *command_line, 
                                    struct metric_t *mt, 
                                    int *collected_entries, 
-                                   float tolerance) {
+                                   float tolerance,
+	                           int allow_negatives) {
 
 	struct deviation_t *dv = NULL;
 	float deviation = 0;
@@ -256,6 +265,10 @@ struct deviation_t *get_deviation( char *command_line,
 	dv = malloc(sizeof(struct deviation_t));
 	dv->top = average + deviation;
 	dv->bottom = average - deviation;
+
+	if (!allow_negatives && dv->bottom < 0) {
+		dv->bottom = (float)0;
+	}
 
 	free(last_values);
 
