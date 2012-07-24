@@ -68,7 +68,7 @@ struct deviation_t *get_deviation( char *command_line,
                                    int allow_negatives
 );
 
-int algorithm;
+int baseline_algorithm;
 int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);
 int db_open_conn();

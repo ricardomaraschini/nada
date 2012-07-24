@@ -78,9 +78,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	aux = iniparser_getstring(ini, "general:baselinealgorithm", "standard_deviation");
-	algorithm = STANDARDDEVIATION; 
+	baseline_algorithm = STANDARDDEVIATION; 
 	if (strstr(aux,"exponential_smoothing")) {
-		algorithm = EXPONENTIALSMOOTH;
+		baseline_algorithm = EXPONENTIALSMOOTH;
 	}
 
 	db_set_max_entries( iniparser_getint(ini, "general:maxentries", MAXENTRIESTODEVIATION) );
@@ -246,7 +246,7 @@ struct deviation_t *get_deviation( char *command_line,
 	i = 0;
 	dv = malloc(sizeof(struct deviation_t));
 
-	if (algorithm == STANDARDDEVIATION) {
+	if (baseline_algorithm == STANDARDDEVIATION) {
 
 		sum = 0;
 		while(*(last_values + i) != -1 && i < max_entries) {
@@ -278,7 +278,7 @@ struct deviation_t *get_deviation( char *command_line,
 		dv->top = average + deviation;
 		dv->bottom = average - deviation;
 
-	} else if (algorithm ==  EXPONENTIALSMOOTH) {
+	} else if (baseline_algorithm ==  EXPONENTIALSMOOTH) {
 
 		smoothed = 0;
 		while(*(last_values + i) != -1 && i < max_entries) {
@@ -286,7 +286,7 @@ struct deviation_t *get_deviation( char *command_line,
 			aux = *(last_values + i);
 
 			if (i > 0) {
-				smoothed = smoothed + 0.3 * (aux - smoothed);
+				smoothed = smoothed + EXPONENTIALALPHA * (aux - smoothed);
 			} else {
 				smoothed = aux;
 			}
