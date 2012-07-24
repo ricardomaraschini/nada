@@ -77,6 +77,12 @@ int main(int argc, char *argv[]) {
 		db_set_dbpassword("");
 	}
 
+	aux = iniparser_getstring(ini, "general:baselinealgorithm", "standard_deviation");
+	algorithm = STANDARDDEVIATION; 
+	if (strstr(aux,"exponential_smoothing")) {
+		algorithm = EXPONENTIALSMOOTH;
+	}
+
 	db_set_max_entries( iniparser_getint(ini, "general:maxentries", MAXENTRIESTODEVIATION) );
 	db_set_sazonality( iniparser_getint(ini, "general:sazonality", SAZONALITY) );
 	min_entries = iniparser_getint(ini, "general:minentries", MINENTRIESTODEVIATION);
@@ -221,6 +227,7 @@ struct deviation_t *get_deviation( char *command_line,
 	float aux = 0;
 	float tosqrt = 0;
 	float sum = 0;
+	float smoothed = 0;
 	int i = 0;
 	int max_entries = MAXENTRIESTODEVIATION;
 	float *last_values = NULL;
@@ -233,38 +240,64 @@ struct deviation_t *get_deviation( char *command_line,
 		*(last_values + i) = (float)-1;
 	}
 
-	db_insert_metric(command_line, mt);
-	
 	db_retrieve_last_values(command_line, mt, last_values);
+	db_insert_metric(command_line, mt);
+
 	i = 0;
-	sum = 0;
-	while(*(last_values + i) != -1 && i < max_entries) {
-		sum += *(last_values + i);
-		i++;
-	}
+	dv = malloc(sizeof(struct deviation_t));
 
-	*collected_entries = i;
+	if (algorithm == STANDARDDEVIATION) {
 
-	if (i > 0) {
-		average = sum / i;
-
-		i = 0;
+		sum = 0;
 		while(*(last_values + i) != -1 && i < max_entries) {
-			aux = *(last_values + i);
-			tosqrt += ( aux - average) * ( aux - average);
+			sum += *(last_values + i);
 			i++;
 		}
 
-		// just to be sure
+		*collected_entries = i;
+
 		if (i > 0) {
-			deviation = sqrt((double)tosqrt/i) * tolerance;
+
+			average = sum / i;
+
+			i = 0;
+			while(*(last_values + i) != -1 && i < max_entries) {
+				aux = *(last_values + i);
+				tosqrt += ( aux - average) * ( aux - average);
+				i++;
+			}
+
+			// just to be sure
+			if (i > 0) {
+				deviation = sqrt((double)tosqrt/i) * tolerance;
+			}
 		}
 
-	}
 
-	dv = malloc(sizeof(struct deviation_t));
-	dv->top = average + deviation;
-	dv->bottom = average - deviation;
+
+		dv->top = average + deviation;
+		dv->bottom = average - deviation;
+
+	} else if (algorithm ==  EXPONENTIALSMOOTH) {
+
+		smoothed = 0;
+		while(*(last_values + i) != -1 && i < max_entries) {
+
+			aux = *(last_values + i);
+
+			if (i > 0) {
+				smoothed = smoothed + 0.3 * (aux - smoothed);
+			} else {
+				smoothed = aux;
+			}
+
+			i++;
+		}
+
+		dv->top = smoothed * tolerance;
+		dv->bottom = smoothed * ( 2 - tolerance);
+
+	}
 
 	if (!allow_negatives && dv->bottom < 0) {
 		dv->bottom = (float)0;

@@ -163,6 +163,11 @@ allownegatives=[yes|no]
 	If this option is defined to 'no', and the bottom boundary reamains
 	below zero, bottom line will become 0.
 
+baselinealgorithm=[exponential_smoothing|standard_deviation]
+	Define algorithm to baseline calculation. Avaible algorithms by now
+	are "Standard Deviation" or "Simple Exponential Smoothing", try
+	both to see which fits better to your monitored resource.
+
 [DATABASE]
 host=localhost
 	MySQL server's IP address.
