@@ -5,6 +5,8 @@ This file contains history of changes for !NADA
 	- Added option to avoid boundary limit below zero
 	- Added exponential smoothing as a valid algorithm to calcule
 	  baselines
+	- Now using NAGIOS_HOSTNAME and NAGIOS_SERVICEDESC at database
+	  level
 
 0.2 - Mon Jul  9 21:07:55 BRT 2012
 	- Splitted history table into two different entities to avoid
