@@ -58,11 +58,19 @@ int db_get_max_entries() {
 int db_insert_command_line(char *command_line) {
 
 	char *query;
+	char *prot_host_name;
+	char *prot_service_description;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row;
 	int id = 0;
 
-	asprintf(&query,"insert into commands values ('','%s')",command_line);
+	prot_host_name = escape_string(host_name);
+	prot_service_description = escape_string(service_description);
+
+	asprintf(&query,"insert into commands values ('','%s','%s','%s')", command_line,
+	                                                                   prot_host_name,
+	                                                                   prot_service_description
+	);
 	do_query(query, FALSE, NULL);
 	free(query);
 	query = NULL;
@@ -83,10 +91,18 @@ int db_get_command_line_id(char *command_line) {
 
 	int id;
 	char *query = NULL;
+	char *prot_host_name;
+	char *prot_service_description;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row;
 
-	asprintf(&query, "select id from commands where command_line='%s'",command_line);
+	prot_host_name = escape_string(host_name);
+	prot_service_description = escape_string(service_description);
+
+	asprintf(&query, "select id from commands where command_line='%s' and host_name='%s' and service_description = '%s'", command_line,
+	                                                                                                                      prot_host_name,
+	                                                                                                                      prot_service_description
+	);
 
 	id = 0;
 	do_query(query, TRUE, &result);

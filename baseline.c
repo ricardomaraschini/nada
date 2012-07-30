@@ -34,15 +34,35 @@ int main(int argc, char *argv[]) {
 	struct metric_t *metrics_root;
 	struct deviation_t *deviation;
 	int exit_code = OK;
-	int ret;
+	int ret = 0;
 	int min_entries = 0;
 	int collected_entries = 0;
 	int allow_negatives = TRUE;
 	float tolerance = 0;
 	dictionary *ini;
+	extern char **environ;
 
 	if (argc <= 1) {
 		printf("Invalid check command supplied\n");
+		return UNKNOWN;
+	}
+
+	// search for hostname and servicedescription macros
+	line = *(environ + ret++);
+	while(line) {
+		aux = strtok(line,"=");
+		if (!strcmp(aux,"NAGIOS_HOSTNAME")) { 
+			host_name = strtok(NULL,"=");
+		} else if (!strcmp(aux,"NAGIOS_SERVICEDESC")) {
+			service_description = strtok(NULL,"=");
+		}
+		ret++;
+		line = *(environ + ret);
+	}
+	line = NULL;
+
+	if (!host_name || !service_description) {
+		printf("Unable to locate NAGIOS_HOSTNAME and NAGIOS_SERVICEDESC macros\n");
 		return UNKNOWN;
 	}
 

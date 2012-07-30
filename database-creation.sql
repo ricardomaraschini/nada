@@ -7,6 +7,9 @@ CREATE TABLE `commands` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE commands ADD COLUMN `host_name` varchar(512) DEFAULT NULL;
+ALTER TABLE commands ADD COLUMN `service_description` varchar(512) DEFAULT NULL;
+
 CREATE TABLE `history` (
   `command_line_id` int(11) unsigned NOT NULL,
   `entry_time` datetime DEFAULT NULL,
