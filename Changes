@@ -1,6 +1,6 @@
 This file contains history of changes for !NADA
 
-0.3 - Not released yet
+0.3 - Tue Aug 21 18:52:48 BRT 2012 
 	- Fixed float cast at tolerance calc
 	- Added option to avoid boundary limit below zero
 	- Added exponential smoothing as a valid algorithm to calcule
