@@ -154,7 +154,12 @@ int main(int argc, char *argv[]) {
 	// our default output return code
 	exit_code = WEXITSTATUS(pclose(command));
 
-	line_bkp = malloc(strlen(line) + 1);
+	if ((line_bkp = malloc(strlen(line) + 1)) == NULL) {
+		printf("Unexpected error\n");
+		free(command_line);
+		free(line);
+		return UNKNOWN;
+	}
 	strcpy(line_bkp,line);
 	line[strlen(line) - 1] = '\x0';
 
@@ -176,7 +181,13 @@ int main(int argc, char *argv[]) {
 		return UNKNOWN;
 	}
 
-	baseline_perfdata = malloc(1);
+	if ((baseline_perfdata = malloc(1)) == NULL) {
+		printf("Unexpected error\n");
+		free(command_line);
+		free(line);
+		free(line_bkp);
+		return UNKNOWN;
+	}
 	*baseline_perfdata = '\x0';
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
 
@@ -256,6 +267,9 @@ struct deviation_t *get_deviation( char *command_line,
 	*collected_entries = 0;
 
 	last_values = malloc(sizeof(float) * max_entries); 
+	if (last_values == NULL)
+		return NULL;
+
 	for(i=0; i<max_entries; i++) {
 		*(last_values + i) = (float)-1;
 	}
@@ -265,6 +279,10 @@ struct deviation_t *get_deviation( char *command_line,
 
 	i = 0;
 	dv = malloc(sizeof(struct deviation_t));
+	if (dv == NULL) {
+		free(last_values);
+		return NULL;
+	}
 
 	if (baseline_algorithm == STANDARDDEVIATION) {
 

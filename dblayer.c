@@ -26,6 +26,8 @@ char *db_database = "nada";
 
 int db_set_dbserver(char *srv) {
 	db_server = malloc(strlen(srv) + 1);
+	if (db_server == NULL)
+		return ERROR;
 	strcpy(db_server,srv);
 	return OK;
 }
@@ -37,12 +39,16 @@ int db_set_sazonality(int saz) {
 
 int db_set_dbuser(char *usr) {
 	db_user = malloc(strlen(usr) + 1);
+	if (db_user == NULL)
+		return ERROR;
 	strcpy(db_user,usr);
 	return OK;
 }
 
 int db_set_dbpassword(char *pass) {
 	db_password = malloc(strlen(pass) + 1);
+	if (db_password == NULL)
+		return ERROR;
 	strcpy(db_password,pass);
 	return OK;
 }
@@ -212,8 +218,12 @@ char *db_create_time_gaps() {
 
 	now = time(NULL);
 
-	str_time_begin = malloc(20);
-	str_time_end = malloc(20);
+	if ((str_time_begin = malloc(20)) == NULL)
+		return NULL;
+
+	if ((str_time_end = malloc(20)) == NULL)
+		return NULL;
+
 	asprintf(&time_gaps," ");
 
 	// date format: 2012-06-27 22:02:55
@@ -224,8 +234,17 @@ char *db_create_time_gaps() {
 		before = previous_week - time_tolerance;
 		after = previous_week + time_tolerance;
 
-		time_begin = malloc(sizeof(struct tm));
-		time_end = malloc(sizeof(struct tm));
+		if ((time_begin = malloc(sizeof(struct tm))) == NULL) {
+			free(str_time_begin);
+			free(str_time_end);
+			return NULL;
+		}
+
+		if ((time_end = malloc(sizeof(struct tm))) == NULL) {
+			free(str_time_begin);
+			free(str_time_end);
+			return NULL;
+		}
 
 		localtime_r(&before, time_begin);
 		localtime_r(&after, time_end);
@@ -280,6 +299,8 @@ char *escape_string(char *from) {
 	char *to = NULL;
 
 	to = malloc( strlen(from) * 2 + 1);
+	if (to == NULL)
+		return NULL;
 	mysql_real_escape_string(conn, to, from, strlen(from));
 
 	return to; 
