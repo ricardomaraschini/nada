@@ -122,10 +122,9 @@ int main(int argc, char *argv[]) {
 
 	line = malloc(MAXPLUGINOUTPUT + 1);
 	if (line == NULL) {
-		printf("Unable to allocate memory\n");
 		free(command_line);
 		pclose(command);
-		return UNKNOWN;
+		goto memory_allocation_error;
 	}
 
 	if (fgets(line, MAXPLUGINOUTPUT,command) == NULL) {
@@ -149,10 +148,9 @@ int main(int argc, char *argv[]) {
 	exit_code = WEXITSTATUS(pclose(command));
 
 	if ((line_bkp = malloc(strlen(line) + 1)) == NULL) {
-		printf("Unexpected error\n");
 		free(command_line);
 		free(line);
-		return UNKNOWN;
+		goto memory_allocation_error;
 	}
 	strcpy(line_bkp,line);
 	line[strlen(line) - 1] = '\x0';
@@ -176,11 +174,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	if ((baseline_perfdata = malloc(1)) == NULL) {
-		printf("Unexpected error\n");
 		free(command_line);
 		free(line);
 		free(line_bkp);
-		return UNKNOWN;
+		goto memory_allocation_error;
 	}
 	*baseline_perfdata = '\x0';
 	for(mt=metrics_root; mt != NULL; mt=mt->next) {
@@ -474,13 +471,10 @@ struct metric_t *parse_perfdata(char *perfdata) {
 char *read_command_line(int argc, char *argv[]) {
 
 	int i;
-	int ret;
 	char *line = NULL;
 
-	ret = asprintf(&line,"%s",argv[1]);
-	if (ret < 0) {
+	if (asprintf(&line,"%s",argv[1]) < 0)
 		return NULL;
-	}
 
 	for(i=2; i<argc; i++) {
 		line = realloc(line, strlen(argv[i]) + strlen(line) + 2);
