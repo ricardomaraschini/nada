@@ -347,6 +347,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 
 	int ret;
 	int i;
+	int length;
 	char *metric_string = NULL;
 	char *aux_string = NULL;
 	regex_t regex;
@@ -372,8 +373,10 @@ struct metric_t *parse_perfdata(char *perfdata) {
 	// for every metric, we gonna extract our data
 	while(regexec(&regex, perfdata, MAXMETRICS, pmatch, 0) == 0 ) {
 
+		length = pmatch[1].rm_eo - pmatch[1].rm_so + 1;
+
 		// create a string to store our metric data
-		metric_string = realloc(metric_string, pmatch[1].rm_eo - pmatch[1].rm_so + 1);
+		metric_string = (char *)calloc(length,sizeof(char));
 
 		// copy metric data to string
 		strncpy(metric_string, perfdata + pmatch[1].rm_so,
@@ -397,7 +400,9 @@ struct metric_t *parse_perfdata(char *perfdata) {
 				if (pmatch[i].rm_so < 0)
 					break;
 
-				aux_string = realloc(aux_string, pmatch[i].rm_eo - pmatch[i].rm_so + 1);
+				length = pmatch[i].rm_eo - pmatch[i].rm_so + 1;
+
+				aux_string = calloc(length,sizeof(char));
 				strncpy(aux_string, 
 				    metric_string + pmatch[i].rm_so,
 				    pmatch[i].rm_eo - pmatch[i].rm_so);
@@ -435,6 +440,9 @@ struct metric_t *parse_perfdata(char *perfdata) {
 				}
 
 
+				free(aux_string);
+
+
 			}
 
 			if (previous_metric) {
@@ -446,11 +454,11 @@ struct metric_t *parse_perfdata(char *perfdata) {
 
 		}
 
+		free(metric_string);
+
 
 	}
 
-	free(metric_string);
-	free(aux_string);
 	regfree(&metric_regex);
 	regfree(&regex);
 
