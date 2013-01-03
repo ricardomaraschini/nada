@@ -77,29 +77,17 @@ int main(int argc, char *argv[]) {
 	// i personally dont like to use 'extern' variables 
 	// with this approach we can easily provide more backends support
 	aux = iniparser_getstring(ini, "database:host", NULL);
-	if (aux)
-		ret = db_set_dbserver(aux);
-	else
-		ret = db_set_dbserver("localhost");
-	
+	ret = (aux) ? db_set_dbserver(aux) : db_set_dbserver("localhost");
 	if (ret != OK)
 		goto memory_allocation_error;
 
 	aux = iniparser_getstring(ini, "database:user", NULL);
-	if (aux)
-		db_set_dbuser(aux);
-	else
-		db_set_dbuser("root");
-	
+	ret = (aux) ? db_set_dbuser(aux) : db_set_dbuser("root");
 	if (ret != OK)
 		goto memory_allocation_error;
 
 	aux = iniparser_getstring(ini, "database:password", NULL);
-	if (aux)
-		db_set_dbpassword(aux);
-	else
-		db_set_dbpassword("");
-	
+	ret = (aux) ? db_set_dbpassword(aux) : db_set_dbpassword("");
 	if (ret != OK)
 		goto memory_allocation_error;
 
