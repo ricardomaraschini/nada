@@ -347,8 +347,6 @@ struct metric_t *parse_perfdata(char *perfdata) {
 
 	int ret;
 	int i;
-	int j;
-	int k;
 	char *metric_string = NULL;
 	char *aux_string = NULL;
 	regex_t regex;
@@ -378,12 +376,8 @@ struct metric_t *parse_perfdata(char *perfdata) {
 		metric_string = realloc(metric_string, pmatch[1].rm_eo - pmatch[1].rm_so + 1);
 
 		// copy metric data to string
-		j = 0;
-		for(i=pmatch[1].rm_so; i<pmatch[1].rm_eo; i++) {
-			*(metric_string + j) = *(perfdata + i);
-			j++;
-		}
-		*(metric_string + j) = '\x0';
+		strncpy(metric_string, perfdata + pmatch[1].rm_so,
+		    pmatch[1].rm_eo - pmatch[1].rm_so);
 
 		// advance perfdata to the next metric
 		perfdata += pmatch[1].rm_eo;
@@ -404,12 +398,9 @@ struct metric_t *parse_perfdata(char *perfdata) {
 					break;
 
 				aux_string = realloc(aux_string, pmatch[i].rm_eo - pmatch[i].rm_so + 1);
-				k = 0;
-				for(j=pmatch[i].rm_so;j<pmatch[i].rm_eo;j++) {
-					*(aux_string + k ) = *(metric_string + j);
-					k++;
-				}
-				*(aux_string + k) = '\x0'; 
+				strncpy(aux_string, 
+				    metric_string + pmatch[i].rm_so,
+				    pmatch[i].rm_eo - pmatch[i].rm_so);
 
 				switch(i) {
 
