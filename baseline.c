@@ -394,7 +394,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 			for(i=1; i<MAXMETRICS; i++) {
 
 				// end of matches
-				if (pmatch[i].rm_so == -1)
+				if (pmatch[i].rm_so < 0)
 					break;
 
 				aux_string = realloc(aux_string, pmatch[i].rm_eo - pmatch[i].rm_so + 1);
