@@ -394,7 +394,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 			metric->next = NULL;
 
 			// iterate through our matches
-			for(i=1; i<MAXMETRICS; i++) {
+			for(i=1; i<=METRICFIELDS; i++) {
 
 				// end of matches
 				if (pmatch[i].rm_so < 0)
