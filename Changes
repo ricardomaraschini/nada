@@ -1,5 +1,12 @@
 This file contains history of changes for !NADA
 
+0.4 - Thu Jan  3 20:27:33 BRST 2013
+	- Added some memory allocation protections
+	- Removed ugly homebrewed string copy function
+	- Migrating from realloc() to calloc()
+	- Using strncpy() instead of strcpy()
+	- Added section `How to help?' into README file
+
 0.3 - Tue Aug 21 18:52:48 BRT 2012 
 	- Fixed float cast at tolerance calc
 	- Added option to avoid boundary limit below zero
