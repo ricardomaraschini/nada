@@ -32,9 +32,8 @@ int db_set_dbserver(char *srv) {
 	return OK;
 }
 
-int db_set_sazonality(int saz) {
+void db_set_sazonality(int saz) {
 	sazonality = saz;
-	return OK;
 }
 
 int db_set_dbuser(char *usr) {
