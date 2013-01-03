@@ -14,7 +14,7 @@
  * $  make all
  *
  * Execute:
- * $  ./nada /path/to/a/nagios/plugin/wich/perfdata
+ * $  ./nada /path/to/a/nagios/plugin/with/perfdata
  *
  */
 #include "baseline.h"
@@ -77,25 +77,31 @@ int main(int argc, char *argv[]) {
 	// i personally dont like to use 'extern' variables 
 	// with this approach we can easily provide more backends support
 	aux = iniparser_getstring(ini, "database:host", NULL);
-	if (aux) {
-		db_set_dbserver(aux);
-	} else {
-		db_set_dbserver("localhost");
-	}
+	if (aux)
+		ret = db_set_dbserver(aux);
+	else
+		ret = db_set_dbserver("localhost");
+	
+	if (ret != OK)
+		goto memory_allocation_error;
 
 	aux = iniparser_getstring(ini, "database:user", NULL);
-	if (aux) {
+	if (aux)
 		db_set_dbuser(aux);
-	} else {
+	else
 		db_set_dbuser("root");
-	}
+	
+	if (ret != OK)
+		goto memory_allocation_error;
 
 	aux = iniparser_getstring(ini, "database:password", NULL);
-	if (aux) {
+	if (aux)
 		db_set_dbpassword(aux);
-	} else {
+	else
 		db_set_dbpassword("");
-	}
+	
+	if (ret != OK)
+		goto memory_allocation_error;
 
 	aux = iniparser_getstring(ini, "general:baselinealgorithm", "standard_deviation");
 	baseline_algorithm = STANDARDDEVIATION; 
@@ -244,6 +250,11 @@ int main(int argc, char *argv[]) {
 	db_close_conn();
 
 	return exit_code;
+
+	memory_allocation_error:
+		fprintf(stderr,"Memory allocation error\n");
+		return CRITICAL;
+
 }
 
 struct deviation_t *get_deviation( char *command_line, 
