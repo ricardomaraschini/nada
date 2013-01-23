@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
 	int collected_entries = 0;
 	int allow_negatives = TRUE;
 	float tolerance = 0;
+	unsigned int name_last_pos = 0;
 	dictionary *ini;
 	extern char **environ;
 
@@ -200,15 +201,42 @@ int main(int argc, char *argv[]) {
  
 		}
 
-		asprintf( &baseline_perfdata_aux,
-		          " %s_top=%.3f%s;;;; %s_bottom=%.3f%s;;;; ", 
-		          mt->name, 
-		          deviation->top,
-		          mt->unit, 
-		          mt->name, 
-		          deviation->bottom,
-		          mt->unit
-		);
+		/* XXX
+		 * this certainly is not the more 
+		 * appropriate way to do it
+		 */
+		name_last_pos = strlen(mt->name) - 1;
+		if (mt->name[name_last_pos] == '\'') {
+			mt->name[name_last_pos] = '\x0';
+			asprintf( &baseline_perfdata_aux," %s_top'=%.3f%s;;;; %s_bottom'=%.3f%s;;;; ", 
+			                                 mt->name, 
+			                                 deviation->top,
+			                                 mt->unit, 
+			                                 mt->name, 
+			                                 deviation->bottom,
+			                                 mt->unit
+			);
+
+		} else if (mt->name[name_last_pos] == '"') {
+			mt->name[name_last_pos] = '\x0';
+			asprintf( &baseline_perfdata_aux," %s_top\"=%.3f%s;;;; %s_bottom\"=%.3f%s;;;; ", 
+			                                 mt->name, 
+			                                 deviation->top,
+			                                 mt->unit, 
+			                                 mt->name, 
+			                                 deviation->bottom,
+			                                 mt->unit
+			);
+		} else {
+			asprintf( &baseline_perfdata_aux," %s_top=%.3f%s;;;; %s_bottom=%.3f%s;;;; ", 
+			                                 mt->name, 
+			                                 deviation->top,
+			                                 mt->unit, 
+			                                 mt->name, 
+			                                 deviation->bottom,
+			                                 mt->unit
+			);
+		}
 
 		baseline_perfdata = realloc(baseline_perfdata, strlen(baseline_perfdata) + strlen(baseline_perfdata_aux) + 1);
 		strcat(baseline_perfdata,baseline_perfdata_aux);
@@ -357,14 +385,15 @@ struct metric_t *parse_perfdata(char *perfdata) {
 	struct metric_t *previous_metric = NULL;
 
 	// regex to split by metric
-	ret = regcomp(&regex," *([^=]+=[^;]*;[^;]*;[^;]*;[^;]*;[^ ]*)", REG_EXTENDED); 
+	// OK: \PhysicalDisk(0 C:)\Disk Transfers/sec: 0|'\PhysicalDisk(0 C:)\Disk Transfers/sec'=0;20;25;
+	ret = regcomp(&regex," *([^=]+=[^;]*;[^;]*;*[^;]*;*[^;]*;*[^ ]*)", REG_EXTENDED); 
 	if (ret != 0) {
 		printf("Unable to compile regular expression\n");
 		return NULL;
 	}
 
 	// a regex to extract our metric values 
-	ret = regcomp(&metric_regex, "([^=]+)=([0-9.]+)([^;]*);([^;]*);([^;]*);([^;]*);([^;]*)", REG_EXTENDED);
+	ret = regcomp(&metric_regex, "([^=]+)=([0-9.]+)([^;]*);*([^;]*);*([^;]*);*([^;]*);*([^;]*)", REG_EXTENDED);
 	if (ret != 0) {
 		printf("Unable to compile internal regular expression\n");
 		return NULL;

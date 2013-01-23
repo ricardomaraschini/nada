@@ -1,4 +1,7 @@
 This file contains history of changes for !NADA
+0.5 - Wed Jan 23 17:54:23 BRST 2013
+	- Fixed parsing of metrics that doesn't contain minimum
+	  and maximum especified on perfdata
 
 0.4 - Thu Jan  3 20:27:33 BRST 2013
 	- Added some memory allocation protections
