@@ -1,6 +1,6 @@
 !NADA - !Not ADAptive Thresholds
 
-Version: 0.05
+Version: 0.06
 
 ************************ WARNING **************************
          THIS PROJECT IS COMPLETELY EXPERIMENTAL!!
@@ -179,8 +179,20 @@ password=
 	MySQL users's password.
 
 
+7 - Database Management
+    ^^^^^^^^^^^^^^^^^^^
 
-7 - Why in the hell C?
+Included with this package there's an executable that should be scheduled to
+run once a day in your crontab. This executable clean all data that NADA 
+doesn't need anymore, avoiding dabase uncontrolled grow.
+
+To correctly schedule database clean up process, just use line below on your
+crontab configuration:
+
+5 0 * * * root /opt/nada/purge-db-data >/dev/null 2>/dev/null
+
+
+8 - Why in the hell C?
     ^^^^^^^^^^^^^^^^^^
 
 The right answer is: because I like it.
@@ -192,7 +204,7 @@ If you want to implement a brand new shining !NADA version on a 'hype' language,
 please remember to advise me, so i can point a link here to your project.
 
 
-7 - How to help?
+9 - How to help?
     ^^^^^^^^^^^^
 
 To see what's going on with this small project, please look on Changes file,

@@ -1,4 +1,9 @@
 This file contains history of changes for !NADA
+
+0.6 - Tue Jan 29 16:28:14 BRST 2013
+	- Included script to clean-up database unnecessary old 
+	  data
+
 0.5 - Wed Jan 23 17:54:23 BRST 2013
 	- Fixed parsing of metrics that doesn't contain minimum
 	  and maximum especified on perfdata
