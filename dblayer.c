@@ -276,6 +276,26 @@ char *db_create_time_gaps() {
 
 }
 
+int db_purge_old_data() {
+
+	struct timeval now;
+	time_t time_boundary;
+	char *query;
+
+	if (gettimeofday(&now,NULL) < 0)
+		return ERROR;
+
+	time_boundary = now.tv_sec - max_entries * sazonality * 24 * 60 * 60;
+	asprintf(&query, "delete from history where entry_time < from_unixtime(%lu)", time_boundary);
+	if (do_query(query, FALSE, NULL) != OK)
+		return ERROR;
+		
+	free(query);
+
+	return OK;
+
+}
+
 int db_open_conn() {
 
 	conn = mysql_init(NULL);
@@ -322,3 +342,4 @@ int do_query(char *q, int return_values, MYSQL_RES **result) {
 	return OK;
 
 }
+

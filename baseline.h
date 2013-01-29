@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <regex.h>
 #include <math.h>
+#include <sys/time.h>
 #include <time.h>
 #include <mysql/mysql.h>
 #include "iniparser/dictionary.h"
@@ -75,6 +76,7 @@ char *service_description;
 
 int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);
+int db_purge_old_data();
 int db_open_conn();
 void db_close_conn();
 char *db_create_time_gaps();
