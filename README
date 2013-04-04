@@ -101,6 +101,7 @@ and also
 - gcc version 4.1.2 20080704 (Red Hat 4.1.2-52)
 - Linux 2.6.18-308.1.1.el5PAE
 - mysql-devel-5.0.95-1.el5_7.1
+- sqlite-devel-3.3.6-6
 
 
 To uninstall, run as root:

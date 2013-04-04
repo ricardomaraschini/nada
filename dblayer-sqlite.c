@@ -263,7 +263,7 @@ int do_query(char *q, int return_values, sqlite3_stmt **result) {
 	int ret;
 
 	if (return_values) {
-		ret = sqlite3_prepare_v2(conn, q, strlen(q), result, NULL);
+		ret = sqlite3_prepare(conn, q, strlen(q), result, NULL);
 		if (ret) {
 			printf("sqlite error: %s\n", sqlite3_errmsg(conn));
 			return ERROR;
