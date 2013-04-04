@@ -6,7 +6,13 @@
 #include <math.h>
 #include <sys/time.h>
 #include <time.h>
+
+#ifdef SQLITE
+#include <sqlite3.h>
+#else
 #include <mysql/mysql.h>
+#endif
+
 #include "iniparser/dictionary.h"
 #include "iniparser/iniparser.h"
 
@@ -74,19 +80,25 @@ int baseline_algorithm;
 char *host_name;
 char *service_description;
 
+int db_set_dbserver(char *srv);
+int db_set_dbpassword(char *pass);
+int db_set_dbuser(char *usr);
 int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);
 int db_purge_old_data();
 int db_open_conn();
-void db_close_conn();
-char *db_create_time_gaps();
-char *escape_string(char *from);
-int do_query(char *q, int return_values, MYSQL_RES **result);
-int db_set_dbserver(char *srv);
-int db_set_dbpassword(char *pass);
-int db_set_dbuser(char *usr);
-void db_set_max_entries(int entries);
 int db_get_max_entries();
 int db_insert_command_line(char *command_line);
 int db_get_command_line_id(char *command_line);
+int db_set_dbname(char *dbname);
+void db_close_conn();
 void db_set_sazonality(int saz);
+void db_set_max_entries(int entries);
+char *db_create_time_gaps();
+
+#ifdef SQLITE
+int do_query(char *q, int return_values, sqlite3_stmt **result);
+#else
+int do_query(char *q, int return_values, MYSQL_RES **result);
+char *escape_string(char *from);
+#endif

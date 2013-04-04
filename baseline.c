@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
 
 	ret = db_open_conn();
 	if (ret != OK) {
-		printf("Unable to connect to mysql database\n");
+		printf("Unable to connect to database\n");
 		free(command_line);
 		free(line);
 		free(line_bkp);
@@ -265,8 +265,8 @@ int main(int argc, char *argv[]) {
 	return exit_code;
 
 	memory_allocation_error:
-		fprintf(stderr,"Memory allocation error\n");
-		return CRITICAL;
+	fprintf(stderr,"Memory allocation error\n");
+	return CRITICAL;
 
 }
 
@@ -329,7 +329,6 @@ struct deviation_t *get_deviation( char *command_line,
 				i++;
 			}
 
-			// just to be sure
 			if (i > 0) {
 				deviation = sqrt((double)tosqrt/i) * tolerance;
 			}
@@ -386,7 +385,7 @@ struct metric_t *parse_perfdata(char *perfdata) {
 
 	// regex to split by metric
 	// OK: \PhysicalDisk(0 C:)\Disk Transfers/sec: 0|'\PhysicalDisk(0 C:)\Disk Transfers/sec'=0;20;25;
-	ret = regcomp(&regex," *([^=]+=[^;]*;[^;]*;*[^;]*;*[^;]*;*[^ ]*)", REG_EXTENDED); 
+	ret = regcomp(&regex," *([^=]+=[^ ]+)", REG_EXTENDED); 
 	if (ret != 0) {
 		printf("Unable to compile regular expression\n");
 		return NULL;
