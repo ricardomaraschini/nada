@@ -19,16 +19,9 @@
 int max_entries;
 int sazonality;
 sqlite3 *conn = NULL;
-char *db_server = NULL;
-char *db_user = NULL;
-char *db_password = NULL; 
 char *db_database = "/tmp/nada";
 
 int db_set_dbserver(char *srv) {
-	db_server = malloc(strlen(srv) + 1);
-	if (db_server == NULL)
-		return ERROR;
-	strcpy(db_server,srv);
 	return OK;
 }
 
@@ -37,10 +30,6 @@ void db_set_sazonality(int saz) {
 }
 
 int db_set_dbuser(char *usr) {
-	db_user = malloc(strlen(usr) + 1);
-	if (db_user == NULL)
-		return ERROR;
-	strcpy(db_user,usr);
 	return OK;
 }
 
@@ -53,10 +42,6 @@ int db_set_dbname(char *dbname) {
 }
 
 int db_set_dbpassword(char *pass) {
-	db_password = malloc(strlen(pass) + 1);
-	if (db_password == NULL)
-		return ERROR;
-	strcpy(db_password,pass);
 	return OK;
 }
 
@@ -88,9 +73,6 @@ int db_open_conn() {
 
 void db_close_conn() {
 	sqlite3_close(conn);
-	free(db_server);
-	free(db_user);
-	free(db_password);
 }
 
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values) {
@@ -102,10 +84,8 @@ int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last
 	int command_line_id = 0;
 
 	command_line_id = db_get_command_line_id(command_line);
-	if (command_line_id == 0) {
-		// a new command line
+	if (!command_line_id)
 		command_line_id = db_insert_command_line(command_line);
-	}
 
 	time_gaps = db_create_time_gaps();
 
@@ -227,10 +207,8 @@ int db_insert_metric(char *command_line, struct metric_t *mt) {
 	int command_line_id;
 
 	command_line_id = db_get_command_line_id(command_line);
-	if (command_line_id == 0) {
-		// a new command line
+	if (!command_line_id)
 		command_line_id = db_insert_command_line(command_line);
-	}
 
 	asprintf(&query,"insert into history values( ?, strftime('%%s', 'now'), ?, ?)");
 	do_query(query, TRUE, &statement);
@@ -287,26 +265,14 @@ char *db_create_time_gaps() {
 	time_t previous_week;
 	time_t before; 
 	time_t after;
-	struct tm *time_begin;
-	struct tm *time_end;
 	char *time_gaps = NULL;
 	char *tmp_time_gap = NULL;
-	char *str_time_begin = NULL;
-	char *str_time_end = NULL;
 	int time_tolerance = 300;
 	int i;
 
 	now = time(NULL);
-
-	if ((str_time_begin = malloc(20)) == NULL)
-		return NULL;
-
-	if ((str_time_end = malloc(20)) == NULL)
-		return NULL;
-
 	asprintf(&time_gaps," ");
 
-	// date format: 2012-06-27 22:02:55
 	for(i=0; i<max_entries; i++) {
 
 		previous_week = now - (i * 60 * 60 * 24 * sazonality);
@@ -328,9 +294,6 @@ char *db_create_time_gaps() {
 		tmp_time_gap = NULL;
 
 	}
-
-	free(str_time_begin);
-	free(str_time_end);
 
 	return time_gaps; 
 
