@@ -239,7 +239,7 @@ Some well known issues.
 
 NADA uses extensively database and, in case of SQLite, there's a limitation
 on query depth. Try to decrease baseline.ini's `maxentries' parameter to a 
-value below 500 and see if proble persists.
+value below 500 and see if the problem persists.
 
 For further details on this `issue': http://www.sqlite.org/limits.html
 
