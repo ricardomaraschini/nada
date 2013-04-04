@@ -336,9 +336,6 @@ char *db_create_time_gaps() {
 
 }
 
-/*
-
-
 int db_purge_old_data() {
 
 	struct timeval now;
@@ -349,7 +346,7 @@ int db_purge_old_data() {
 		return ERROR;
 
 	time_boundary = now.tv_sec - max_entries * sazonality * 24 * 60 * 60;
-	asprintf(&query, "delete from history where entry_time < from_unixtime(%lu)", time_boundary);
+	asprintf(&query, "delete from history where entry_time < %lu", time_boundary);
 	if (do_query(query, FALSE, NULL) != OK)
 		return ERROR;
 		
@@ -358,6 +355,3 @@ int db_purge_old_data() {
 	return OK;
 
 }
-
-
-*/
