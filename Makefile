@@ -6,7 +6,15 @@ CFLAGS=-g -L/usr/lib64/mysql -L/usr/lib/mysql -Wall
 MACROS=-D"INSTALLPATH=\"$(INSTALLPATH)\""
 SQLITEMACROS=-D"INSTALLPATH=\"$(INSTALLPATH)\"" -D"SQLITE"
 
-all: baseline
+none:
+	@echo "Please supply a command line argument.  Targets are:"
+	@echo "    - make mysql"
+	@echo "         Compiles nada for mysql database"
+	@echo "    - mysql sqlite"
+	@echo "         Compiles nada for sqlite database"
+
+mysql: baseline
+sqlite: baselinesqlite
 
 baseline: 
 	$(CC) $(CFLAGS) $(LIBS) $(MACROS) -o nada dblayer.c baseline.c iniparser/iniparser.c iniparser/dictionary.c
