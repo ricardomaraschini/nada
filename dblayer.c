@@ -32,6 +32,14 @@ int db_set_dbserver(char *srv) {
 	return OK;
 }
 
+int db_set_dbname(char *dbname) {
+	db_database = malloc(strlen(dbname) + 1);
+	if (!db_database)
+		return ERROR;
+	strcpy(db_database, dbname);
+	return OK;
+}
+
 void db_set_sazonality(int saz) {
 	sazonality = saz;
 }
