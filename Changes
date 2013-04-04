@@ -1,5 +1,8 @@
 This file contains history of changes for !NADA
 
+0.9 - Thu Apr  4 14:51:06 BRT 2013
+	- Added support for SQLite database.
+
 0.6 - Tue Jan 29 16:28:14 BRST 2013
 	- Included script to clean-up database unnecessary old 
 	  data

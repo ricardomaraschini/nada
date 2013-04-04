@@ -1,6 +1,6 @@
 !NADA - !Not ADAptive Thresholds
 
-Version: 0.06
+Version: 0.09
 
 ************************ WARNING **************************
          THIS PROJECT IS COMPLETELY EXPERIMENTAL!!
@@ -23,11 +23,12 @@ Monday has a higher load average than during the other days?"
 1 - How does it work?
     ^^^^^^^^^^^^^^^^^
 
-!NADA requires a MySQL database running together with Nagios(R)/Icinga. It encapsulates
-your check plugin, parses and stores performance data into DB, calculates the 
-standard deviation and creates two new metrics, pointing to the top and bottom 
-of your baseline. If collected value overflow (up or down) the baseline, !NADA
-change the plugin return code to CRITICAL thus causing Nagios(R)/Icinga to alert.
+!NADA requires a MySQL database running or an SQLite installation together with 
+Nagios(R)/Icinga. It encapsulates your check plugin, parses and stores performance
+data into DB, calculates the standard deviation and creates two new metrics, pointing 
+to the top and bottom of your baseline. If collected value overflow (up or down) the 
+baseline, !NADA change the plugin return code to CRITICAL thus causing Nagios(R)/Icinga
+to alert.
 
 !NADA' standard behaviour assumes that you are using a week sazonality, if it's
 not appropriate, please may the source be with you.
@@ -65,25 +66,35 @@ At these early stages I have not prepared any how-to on compilation, however
 it's pretty direct and simple.
 
 You'll need just a C compiler (of course) and mysql-devel package installed 
-into your system. I left a simple Makefile together with the project, so if
-you want to adapt it to your system, feel free to do it, but don't forget to
-send me a diff. ;)
+into your system(if you gonna use MySQL, otherwise you need sqlite-devel). 
+I left a simple Makefile together with the project, so ifyou want to adapt 
+it to your system, feel free to do it, but don't forget to send me a diff. ;)
 
-Basically, you just need to set the path to mysql-devel libraries inside the
-Makefile and then run:
+3.1 - MySQL compilation:
 
-$ make all
+$ make mysql
 ...
 
 Then, as root:
 
 $ make install
 
+3.2 - SQLite compilatoin:
+
+$ make sqlite
+...
+
+Then, as root:
+
+$ make install
+
+
 I have sucessfully built it with:
 
 - gcc version 4.6.3 20120306 (Red Hat 4.6.3-2) (GCC)
 - Linux 3.4.2-1.fc16.x86_64 
 - mysql-devel-5.5.24-1.fc16.x86_64
+- sqlite-devel-3.7.7.1-1.fc16.x86_64
 
 and also
 
@@ -105,8 +116,8 @@ You will find a .sql file together with the package. You basically need to run:
 $ mysql -u root -p -A < database-creation.sql 
 
 
-5 - How can I configure database user/password?
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 - How can I configure MySQL database user/password?
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can change the user, password and host to your MySQL server by editing
 baseline.ini at root source directory before installing or, after running 
@@ -171,12 +182,20 @@ baselinealgorithm=[exponential_smoothing|standard_deviation]
 [DATABASE]
 host=localhost
 	MySQL server's IP address.
+	This parameter is ignored in case of SQLite.
 
 user=root
 	MySQL user with write/read permissions to `nada` database.
+	This parameter is ignored in case of SQLite.
 
-password=
+password=mypass
 	MySQL users's password.
+	This parameter is ignored in case of SQLite.
+
+dbname=nada
+	For MySQL, specify database name(default nada).
+	For SQLite, it points to valid path where SQLite gonna be
+	created(i.e. dbname=/tmp/nada)
 
 
 7 - Database Management
@@ -210,4 +229,17 @@ please remember to advise me, so i can point a link here to your project.
 To see what's going on with this small project, please look on Changes file,
 and if you're willing to help in any way, please contact-me and i'll certainly
 have something for you to do.
+
+10 - Caveats
+     ^^^^^^^
+
+Some well known issues.
+
+10.1 - Expression tree is too large (maximum depth 1000)
+
+NADA uses extensively database and, in case of SQLite, there's a limitation
+on query depth. Try to decrease baseline.ini's `maxentries' parameter to a 
+value below 500 and see if proble persists.
+
+For further details on this `issue': http://www.sqlite.org/limits.html
 
