@@ -79,7 +79,7 @@ Then, as root:
 
 $ make install
 
-3.2 - SQLite compilatoin:
+3.2 - SQLite compilation:
 
 $ make sqlite
 ...
