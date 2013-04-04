@@ -94,9 +94,13 @@ int main(int argc, char *argv[]) {
 
 	aux = iniparser_getstring(ini, "general:baselinealgorithm", "standard_deviation");
 	baseline_algorithm = STANDARDDEVIATION; 
-	if (strstr(aux,"exponential_smoothing")) {
+	if (strstr(aux,"exponential_smoothing"))
 		baseline_algorithm = EXPONENTIALSMOOTH;
-	}
+
+	aux = iniparser_getstring(ini, "database:dbname", NULL);
+	ret = (aux) ? db_set_dbname(aux) : db_set_dbname("nada");
+	if (ret != OK)
+		goto memory_allocation_error;
 
 	db_set_max_entries( iniparser_getint(ini, "general:maxentries", MAXENTRIESTODEVIATION) );
 	db_set_sazonality( iniparser_getint(ini, "general:sazonality", SAZONALITY) );
