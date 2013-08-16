@@ -85,16 +85,16 @@ int db_set_dbpassword(char *pass);
 int db_set_dbuser(char *usr);
 int db_insert_metric(char *command_line, struct metric_t *mt);
 int db_retrieve_last_values(char *command_line, struct metric_t *mt, float *last_values);
-int db_purge_old_data();
-int db_open_conn();
-int db_get_max_entries();
+int db_purge_old_data(void);
+int db_open_conn(void);
+int db_get_max_entries(void);
 int db_insert_command_line(char *command_line);
 int db_get_command_line_id(char *command_line);
 int db_set_dbname(char *dbname);
-void db_close_conn();
+void db_close_conn(void);
 void db_set_sazonality(int saz);
 void db_set_max_entries(int entries);
-char *db_create_time_gaps();
+char *db_create_time_gaps(void);
 
 #ifdef SQLITE
 int do_query(char *q, int return_values, sqlite3_stmt **result);
