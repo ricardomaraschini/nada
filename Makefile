@@ -27,8 +27,8 @@ baseline:
 	$(CC) $(CFLAGS) $(LIBS) $(MACROS) -o purge-db-data purge-db-data.c dblayer.c iniparser/iniparser.c iniparser/dictionary.c
 
 baselinesqlite: 
-	$(CC) $(LIBSSQLITE) $(SQLITEMACROS) -o nada dblayer-sqlite.c baseline.c iniparser/iniparser.c iniparser/dictionary.c
-	$(CC) $(LIBSSQLITE) $(SQLITEMACROS) -o purge-db-data purge-db-data.c dblayer-sqlite.c iniparser/iniparser.c iniparser/dictionary.c
+	$(CC) $(CFLAGS) $(LIBSSQLITE) $(SQLITEMACROS) -o nada dblayer-sqlite.c baseline.c iniparser/iniparser.c iniparser/dictionary.c
+	$(CC) $(CFLAGS) $(LIBSSQLITE) $(SQLITEMACROS) -o purge-db-data purge-db-data.c dblayer-sqlite.c iniparser/iniparser.c iniparser/dictionary.c
 
 clean:
 	rm -rf nada 
