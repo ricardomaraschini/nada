@@ -1,10 +1,16 @@
-INSTALLPATH=/opt/nada
-CC=gcc
-LIBS=-lm -lmysqlclient
-LIBSSQLITE=-lm -lsqlite3
-CFLAGS=-g -L/usr/lib64/mysql -L/usr/lib/mysql -Wall
-MACROS=-D"INSTALLPATH=\"$(INSTALLPATH)\""
-SQLITEMACROS=-D"INSTALLPATH=\"$(INSTALLPATH)\"" -D"SQLITE"
+INSTALLPATH     =	/opt/nada
+CC              =	gcc
+
+LIBS            =	-lm -lmysqlclient
+LIBSSQLITE      =	-lm -lsqlite3
+CFLAGS          =	-g -L/usr/lib64/mysql -L/usr/lib/mysql
+CFLAGS         +=	-Wstrict-prototypes -Wmissing-prototypes
+CFLAGS         +=	-Wmissing-declarations -Wshadow
+CFLAGS         +=	-Wpointer-arith -Wcast-qual
+CFLAGS         +=	-Wsign-compare
+
+MACROS          =	-D"INSTALLPATH=\"$(INSTALLPATH)\""
+SQLITEMACROS    =	-D"INSTALLPATH=\"$(INSTALLPATH)\"" -D"SQLITE"
 
 none:
 	@echo "Please supply a command line argument.  Targets are:"
