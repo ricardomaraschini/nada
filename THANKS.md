@@ -1,4 +1,5 @@
-## My special thanks to:
+My special thanks to:
+=====================
 
 * Leonardo Vaz
 * Josu Gil Arriortua 
